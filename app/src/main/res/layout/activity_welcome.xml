@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:background="#FFFFFFFF">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <!-- gamelayout -->
+        <RelativeLayout
+            android:id="@+id/gamelayout"
+            android:background="#ffffffff"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true">
+
+            <ImageView
+                android:id="@+id/launcherlayoutImageView2"
+                android:background="#262423"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_alignParentBottom="true"
+                android:contentDescription="@null" />
+
+            <ImageView
+                android:id="@+id/launcherlayoutImageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/welcome"
+                android:scaleType="centerCrop"
+                android:layout_above="@id/launcherlayoutImageView2"
+                android:layout_centerInParent="true"
+                android:contentDescription="@null" />
+
+            <LinearLayout
+                android:id="@+id/lisense"
+                android:layout_marginHorizontal="50dp"
+                android:layout_marginVertical="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#262626"
+                android:paddingHorizontal="50dp"
+                android:layout_alignTop="@id/launcherlayoutImageView1"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:layout_marginVertical="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="WELCOME TO LFLAUNCHER"
+                    android:fontFamily="@font/mcfontent"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Join one of biggest community in gaming and start your adventure!"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:layout_marginVertical="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#CA8A91"
+                    android:gravity="center_horizontal"
+                    android:textSize="16sp"
+                    android:text="Before installing this version of the LF Launcher, be \n sure you are logged in to the Discord by clicking\n the link below." />
+
+                <TextView
+                    android:textStyle="bold"
+                    android:textSize="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:id="@+id/btnLoginDiscord"
+                    android:text="Click here to login to Discord" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_marginVertical="10dp"
+                    android:background="#555555"
+                    android:layout_height="3dp" />
+
+                <TextView
+                    android:id="@+id/term"
+                    android:textStyle="bold"
+                    android:textSize="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:text="View Lastfom license Term" />
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <CheckBox
+                        android:layout_marginLeft="10dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/custom_checkbox_square"
+                        android:button="@null" />
+
+                    <TextView
+                        android:layout_marginLeft="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="I have read and agree to the License Terms"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:stateListAnimator="@null"
+                android:fontFamily="@font/mcfontent"
+                android:id="@+id/launcher_play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/light_button"
+                android:text="Install"
+                android:tint="@null"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="@null"/>
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

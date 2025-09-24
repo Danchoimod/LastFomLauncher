@@ -35,10 +35,10 @@ public class SplashActivity extends BaseActivity {
         startAppNameAnimation();
 
         tvAppName.postDelayed(() -> {
-            Intent newIntent = new Intent(this, MainActivity.class);
+            Intent newIntent = new Intent(this, WelcomeActivity.class);
             startActivity(newIntent);
             finish();
-        }, 2000);
+        }, 3000);
         Glide.with(this) // hoặc getApplicationContext()
                 .asGif()
                 .load(Uri.parse("file:///android_asset/loading.gif"))
