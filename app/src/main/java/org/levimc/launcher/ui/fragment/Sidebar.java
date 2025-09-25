@@ -105,7 +105,7 @@ public class Sidebar extends Fragment {
 
         // Set background selector and make clickable/focusable
         for (LinearLayout layout : layouts) {
-//            layout.setBackgroundResource(R.drawable.control_button);
+            layout.setBackgroundResource(R.drawable.control_button);
             layout.setClickable(true);
             layout.setFocusable(true);
         }
@@ -117,17 +117,17 @@ public class Sidebar extends Fragment {
         });
         btnSettings.setOnClickListener(v -> {
             toggleSelection(btnSettings);
-//            openFragment(new SettingNavigator());
+            openFragment(new SettingNavigator());
         });
         bedrockEdition.setOnClickListener(v -> {
             toggleSelection(bedrockEdition);
-//            openFragment(new BedrockContainer());
+            openFragment(new BedrockContainer());
         });
         llHome.setOnClickListener(v -> {
             toggleSelection(llHome);
         });
         llNews.setOnClickListener(v -> {
-//            openFragment(new What_new());
+            openFragment(new What_new());
             toggleSelection(llNews);
         });
 
@@ -135,12 +135,12 @@ public class Sidebar extends Fragment {
         toggleSelection(bedrockEdition);
 
         // Load BedrockContainer fragment at start
-//        if (savedInstanceState == null) {
-//            getChildFragmentManager()
-//                    .beginTransaction()
-//                    .replace(R.id.gamelayout, new BedrockContainer())
-//                    .commit();
-//        }
+        if (savedInstanceState == null) {
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.gamelayout, new BedrockContainer())
+                    .commit();
+        }
         return view;
     }
 

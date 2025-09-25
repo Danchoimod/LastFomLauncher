@@ -198,5 +198,36 @@
     <string name="select_export_location">Select export location</string>
     <string name="invalid_world_file">Invalid world file</string>
     <string name="invalid_resource_pack_file">Invalid resource pack file</string>
-
+    <string-array name="language_spinner_array">
+        <item>English - United States</item>
+        <item>Tiếng Việt - Việt Nam</item>
+        <item>English - Canada</item>
+        <item>Japanese</item>
+    </string-array>
+    <array name="theme_spinner_array">
+        <item>Lastest Update</item>
+    </array>
+    <!--    Phần này là phần fag-->
+    <string name="q1">What is the Minecraft Launcher?</string>
+    <string name="a1">The Minecraft Launcher is the portal into the world of Minecraft. The Launcher can not only help you install and play Minecraft games, but you can also go to the Launcher to learn about important Minecraft news and events. Previously, only including Minecraft: Java Edition and Minecraft Dungeons, the Launcher now also includes Minecraft: Bedrock Edition, making this the next big step in the Launcher team’s quest to create a unified experience for all Minecraft players! Read more about the Launcher at https://aka.ms/NewMinecraftLauncherFAQ</string>
+    <string name="q2">I\'m having trouble signing in to Minecraft: Bedrock Edition. What can I do?</string>
+    <string name="a2">Go to aka.ms/SigninProblemsFAQ for information that might help you resolve this.</string>
+    <string name="q3">What are the differences between Minecraft: Java Edition and Minecraft: Bedrock Edition?</string>
+    <string name="a3">While every version of Minecraft is still Minecraft, the differences between Minecraft: Bedrock Edition and Minecraft: Java Edition can be quite extensive. For instance, Minecraft: Java Edition is PC only, whereas Minecraft: Bedrock Edition is multi-platform, being available on console, via mobile, and on PC. Go to https://aka.ms/JavaBedrockDifferences to find out more about the differences between the two games.</string>
+    <string name="q4">How can I find out about what the most recent Minecraft for Windows update includes?</string>
+    <string name="a4">You can check out https://aka.ms/MinecraftUpdate for detail on the most recent main release, and https://aka.ms/MinecraftBeta for detail on the most recent Beta release.</string>
+    <string name="q5">Do I need to have the Minecraft Launcher installed to play Minecraft for Windows games? Do I have to go through the Minecraft Launcher to play Minecraft games?</string>
+    <string name="a5">You do not need to have the Minecraft Launcher installed to play Minecraft for Windows; you can still open your game directly. The same is true for Minecraft Dungeons. However, if you want to play Minecraft: Java Edition, you will need to have the Minecraft Launcher installed to get into the game.</string>
+    <string name="q6">Do I need to install the Minecraft Launcher to play Minecraft games on Xbox Game Pass for PC?</string>
+    <string name="a6">You do need the Launcher installed if you want to play Minecraft: Java Edition through Xbox Game Pass for PC. However, while the Launcher is the easiest way to install and play the Minecraft for Windows and Minecraft Dungeons games, it is possible to launch these games directly after installing by going directly to their respective Microsoft Store pages. As such, the Minecraft Launcher is probably the easiest and most straightforward way to install and play all Minecraft games via a Game Pass for PC subscription.</string>
+    <string name="q7">I didn’t receive an item that I purchased in the Marketplace. What should I do?</string>
+    <string name="a7">Go to aka.ms/MarketplaceHelpFAQ for suggestions to help resolve this problem.</string>
+    <string name="q8">I am having Multiplayer connection problems. What can I do?</string>
+    <string name="a8">Go to aka.ms/ConnectionProblemsFAQ to find solutions to Multiplayer Connectivity problems. This includes not being able to join a friend’s world, not being able to communicate with friends, and a host of other potential issues.</string>
+    <string name="q9">I’m having Realms Plus connection problems. What can I do to fix this?</string>
+    <string name="a9">Go to aka.ms/RealmsPlusConnectionFAQ for information about how to address common Realms connection issues.</string>
+    <string name="q10">I need to edit child account settings to fix a Realms connection issue. How do I do that?</string>
+    <string name="a10">Go to aka.ms/ManageChildSettingsFAQ for information on how to edit these settings to help fix your problem.</string>
+    <string name="faq_title">Frequently asked questions</string>
+    <string name="faq_intro">Here are some frequently asked questions about Minecraft: Bedrock Edition and the Minecraft Launcher.</string>
 </resources>

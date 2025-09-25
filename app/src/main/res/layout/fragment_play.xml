@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:background="#FFFFFFFF">
+
+
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <!-- gamelayout -->
+        <RelativeLayout
+            android:id="@+id/gamelayout"
+            android:background="#ffffffff"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true">
+
+            <ImageView
+                android:id="@+id/launcherlayoutImageView2"
+                android:background="#262423"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_alignParentBottom="true"
+                android:contentDescription="@null" />
+            <!--            thanh công cụ -->
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:textSize="11dp"
+                android:textColor="@color/white"
+                android:text="NOT ASSOCIATED OR APPROVED BY MOJANG"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:contentDescription="@null" />
+
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:layout_alignParentBottom="true">
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/bedrockicon"
+        android:contentDescription="@null" />
+
+</LinearLayout>
+
+            <ImageView
+                android:id="@+id/launcherlayoutImageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/lastest"
+                android:scaleType="centerCrop"
+                android:layout_above="@id/launcherlayoutImageView2"
+                android:layout_centerInParent="true"
+                android:contentDescription="@null" />
+
+            <!-- Overlay Discord logo on top of the 'lastest' image -->
+            <ImageView
+                android:id="@+id/minecraft_logo"
+                android:layout_width="200dp"
+                android:layout_height="100dp"
+                android:src="@drawable/bugrockedtion"
+                android:layout_alignTop="@id/launcherlayoutImageView1"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:elevation="2dp"
+                android:contentDescription="@null" />
+
+            <Button
+                android:fontFamily="@font/mcfontent"
+                android:id="@+id/launcher_play_button"
+                android:background="@drawable/playbutton"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:text="Play"
+                android:textColor="@color/white"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                app:backgroundTint="@null"/>
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>
