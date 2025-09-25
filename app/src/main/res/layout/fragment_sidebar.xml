@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFFFF">
+
+    <!-- 📌 Thanh điều hướng bên trái -->
+    <RelativeLayout
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:background="#312D2C"
+        android:padding="0dp">
+
+        <!-- Nội dung phía trên -->
+        <LinearLayout
+            android:id="@+id/sidebar_top"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <!-- Thành phần avatar -->
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:padding="10dp"
+                android:background="@drawable/control_button"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/emojime"
+                    android:scaleType="centerCrop"
+                    android:clipToOutline="true"
+                    android:id="@+id/avatar"
+                    android:background="@drawable/avatar"
+                    android:layout_marginRight="5dp"
+                    >
+                </ImageView>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/username"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Guest"></TextView>
+                    <TextView
+                        android:id="@+id/discord_account"
+                        android:textSize="12sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Discord Account"
+                        android:textColor="#ffffff"
+                        ></TextView>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llHome"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:padding="10dp"
+                android:background="@drawable/control_button"
+                android:layout_height="50dp">
+                <ImageView
+                    android:layout_marginRight="5dp"
+                    android:layout_width="30dp"
+                    android:padding="2dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/home"
+                    android:scaleType="centerCrop"
+                    android:clipToOutline="true"
+                    >
+                </ImageView>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/Home"
+                        android:textColor="#ffffff"
+                        android:textStyle="bold"
+                        android:textSize="12sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="HOME"></TextView>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/bedrockEdition"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:padding="10dp"
+                android:background="@drawable/control_button"
+                android:layout_height="50dp">
+                <ImageView
+                    android:padding="2dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/bedrockicon"
+                    android:scaleType="centerCrop"
+                    android:clipToOutline="true"
+                    >
+                </ImageView>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="#ffffff"
+                        android:textSize="12sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MINECRAFT:"></TextView>
+                    <TextView
+                        android:textSize="10sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BEDROCK EDITION"
+                        android:textStyle="bold"
+                        android:textColor="#ffffff"
+                        ></TextView>
+                </LinearLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/javaEdition"
+                android:gravity="center"
+                android:padding="10dp"
+                android:background="@drawable/control_button"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+
+                <ImageView
+                    android:padding="2dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/java"
+                    android:scaleType="centerCrop"
+                    android:clipToOutline="true"
+                    >
+                </ImageView>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="#ffffff"
+                        android:textSize="12sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MINECRAFT:"></TextView>
+                    <TextView
+                        android:textSize="10sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="JAVA EDITION"
+                        android:textStyle="bold"
+                        android:textColor="#ffffff"
+                        ></TextView>
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Nút ở dưới cùng -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <LinearLayout
+                android:id="@+id/llNews"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:padding="10dp"
+                android:background="@drawable/control_button"
+                android:layout_height="50dp">
+                <ImageView
+                    android:layout_marginRight="5dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/blog"
+                    android:scaleType="centerCrop"
+                    android:clipToOutline="true"
+                    >
+                </ImageView>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/newsText"
+                        android:textColor="#ffffff"
+                        android:textStyle="bold"
+                        android:textSize="12sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="WHAT'S NEW"></TextView>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:padding="10dp"
+                android:background="@drawable/control_button"
+                android:id="@+id/llSettings"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:layout_height="50dp">
+                <ImageView
+                    android:layout_marginRight="5dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/settingicon"
+                    android:scaleType="centerCrop"
+                    android:clipToOutline="true"
+                    >
+                </ImageView>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/settingText"
+                        android:textColor="#ffffff"
+                        android:textStyle="bold"
+                        android:textSize="12sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SETTINGS"></TextView>
+                </LinearLayout>
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="v2.0.0-alpha"
+                android:textSize="12sp"
+                android:textColor="#ffffff"></TextView>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <!-- 📌 Nội dung chính bên phải -->
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+
+        <!-- gamelayout - Container chứa fragment -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/gamelayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+</LinearLayout>

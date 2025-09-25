@@ -71,7 +71,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
         launcher_play_button.setOnClickListener(v -> {
             if (logined != false){
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = new Intent(this, MainLauncher.class);
                 startActivity(intent);
                 finish();
             }else{

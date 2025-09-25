@@ -85,6 +85,11 @@
             android:exported="false"
             android:screenOrientation="sensorLandscape"
             tools:ignore="DiscouragedApi" />
+        <activity
+            android:name="org.levimc.launcher.ui.activities.MainLauncher"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape"
+            tools:ignore="DiscouragedApi" />
 
         <activity
             android:name=".ui.activities.IntentHandler"

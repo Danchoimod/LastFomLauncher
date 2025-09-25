@@ -1,0 +1,12 @@
+<!-- app/src/main/res/drawable/control_button.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Ưu tiên: nếu được chọn thì dùng pressed/focused style -->
+    <item android:state_selected="true" android:drawable="@drawable/control_button_focused" />
+
+    <!-- Nếu đang nhấn thì dùng pressed style -->
+    <item android:state_pressed="true" android:drawable="@drawable/control_button_pressed" />
+
+    <!-- Mặc định -->
+    <item android:drawable="@drawable/control_button_normal" />
+</selector>
