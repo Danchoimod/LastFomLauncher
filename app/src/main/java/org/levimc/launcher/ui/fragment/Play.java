@@ -1,49 +1,42 @@
 package org.levimc.launcher.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
 import org.levimc.launcher.R;
+import org.levimc.launcher.core.minecraft.MinecraftLauncher;
+import org.levimc.launcher.core.versions.GameVersion;
+import org.levimc.launcher.core.versions.VersionManager;
+import org.levimc.launcher.databinding.FragmentPlayBinding;
+import org.levimc.launcher.ui.dialogs.GameVersionSelectDialog;
+import org.levimc.launcher.ui.dialogs.gameversionselect.BigGroup;
+import org.levimc.launcher.ui.dialogs.gameversionselect.VersionUtil;
+import org.levimc.launcher.ui.views.MainViewModel;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Play#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class Play extends Fragment {
+import java.util.List;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class Play extends Fragment {
+    public interface PlayListener {
+        void onPlayClicked();
+    }
+    private MainViewModel viewModel;
+    private PlayListener listener;
+    private VersionManager versionManager;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private ImageView title;
+    private FragmentPlayBinding binding;
+    private MinecraftLauncher minecraftLauncher;
 
-    private Button playButton;
+    public Play() {}
 
-    public Play() {
-        // Required empty public constructor
-    }
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Play.
-     */
-    // TODO: Rename and change types and number of parameters
     public static Play newInstance(String param1, String param2) {
         Play fragment = new Play();
         Bundle args = new Bundle();
@@ -65,26 +58,99 @@ public class Play extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate layout fragment trước, lấy View root
-        View rootView = inflater.inflate(R.layout.fragment_play, container, false);
-
-        // Tìm spinner trên View root
-//        Spinner spinner = rootView.findViewById(R.id.planets_spinner);
-        title = rootView.findViewById(R.id.minecraft_logo);
-        playButton = rootView.findViewById(R.id.launcher_play_button);
-        // Tạo adapter và gán cho spinner
-//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-//                getContext(),  // Hoặc getActivity()
-//                R.array.planets_array,
-//                R.layout.spinner_item
-//        );
-        playButton.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Button clicked", Toast.LENGTH_SHORT).show();
-        });
-        
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        spinner.setAdapter(adapter);
-        return rootView;
+        binding = FragmentPlayBinding.inflate(inflater, container, false);
+        // Khởi tạo managers tại đây nếu cần
+        versionManager = VersionManager.get(getContext());
+        versionManager.loadAllVersions();
+        minecraftLauncher = new MinecraftLauncher(getContext(), ClassLoader.getSystemClassLoader());
+        return binding.getRoot();
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initListeners();
+        setTextMinecraftVersion();
+        updateViewModelVersion();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
+    private void launchGame() {
+        binding.launchButton.setEnabled(false);
+        binding.progressLoader.setVisibility(View.VISIBLE);
+        new Thread(() -> {
+            GameVersion version = versionManager != null ? versionManager.getSelectedVersion() : null;
+            minecraftLauncher.launch(requireActivity().getIntent(), version);
+            requireActivity().runOnUiThread(() -> {
+                if (binding != null) {
+                    binding.progressLoader.setVisibility(View.GONE);
+                    binding.launchButton.setEnabled(true);
+                }
+            });
+        }).start();
+    }
+
+    @SuppressLint({"ClickableViewAccessibility", "UnsafeIntentLaunch"})
+    private void initListeners() {
+        binding.launchButton.setOnClickListener(v -> {launchGame();
+            Toast.makeText(getContext(), "launch", Toast.LENGTH_SHORT).show();
+        });
+        binding.selectVersionButton.setOnClickListener(v -> showVersionSelectDialog());
+    }
+
+    private void updateViewModelVersion() {
+        GameVersion selectedVersion = versionManager.getSelectedVersion();
+        if (selectedVersion != null && viewModel != null) {
+            viewModel.setCurrentVersion(selectedVersion);
+        }
+    }
+
+    private void showVersionSelectDialog() {
+        if (versionManager == null) return;
+        versionManager.loadAllVersions();
+        List<BigGroup> bigGroups = VersionUtil.buildBigGroups(
+                versionManager.getInstalledVersions(),
+                versionManager.getCustomVersions()
+        );
+        GameVersionSelectDialog dialog = new GameVersionSelectDialog(getContext(), bigGroups);
+        dialog.setOnVersionSelectListener(version -> {
+            versionManager.selectVersion(version);
+            if (viewModel != null)
+                viewModel.setCurrentVersion(version);
+            setTextMinecraftVersion();
+        });
+        dialog.show();
+    }
+
+    public void setTextMinecraftVersion() {
+        if (binding == null) return;
+        String display = versionManager.getSelectedVersion() != null ?
+                versionManager.getSelectedVersion().displayName : getString(R.string.not_found_version);
+        binding.textMinecraftVersion.setText(TextUtils.isEmpty(display) ? getString(R.string.not_found_version) : display);
+        updateAbiLabel();
+    }
+
+    private void updateAbiLabel() {
+        if (binding == null) return;
+        TextView abiLabel = binding.abiLabel;
+        String abiList = (versionManager.getSelectedVersion() != null) ? versionManager.getSelectedVersion().abiList : null;
+        String abiToShow = "unknown";
+        if (!TextUtils.isEmpty(abiList) && !"unknown".equals(abiList)) {
+            abiToShow = abiList.split("\\n")[0].trim();
+        }
+        abiLabel.setText(abiToShow);
+        int bgRes = switch (abiToShow) {
+            case "arm64-v8a" -> R.drawable.bg_abi_arm64_v8a;
+            case "armeabi-v7a" -> R.drawable.bg_abi_armeabi_v7a;
+            case "x86" -> R.drawable.bg_abi_x86;
+            case "x86_64" -> R.drawable.bg_abi_x86_64;
+            default -> R.drawable.bg_abi_default;
+        };
+//        abiLabel.setBackgroundResource(bgRes);
+    }
 }

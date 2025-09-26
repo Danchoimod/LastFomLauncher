@@ -6,4 +6,7 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+    <style name="LegacyEditText" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:background">?attr/editTextBackground</item>
+    </style>
 </resources>
