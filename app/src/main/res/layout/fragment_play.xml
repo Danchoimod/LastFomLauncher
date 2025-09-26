@@ -34,7 +34,7 @@
 
 
             <TextView
-                android:id="@+id/abiLabel"
+
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
                 android:textSize="11dp"
@@ -55,7 +55,6 @@
         android:id="@+id/select_version_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingEnd="8dp">
@@ -64,14 +63,13 @@
             android:id="@+id/text_minecraft_version"
             android:layout_width="wrap_content"
             android:text="0.11.0"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableStart="@drawable/ic_minecraft_cube"
-            android:drawablePadding="7dp"
             android:gravity="center_vertical"
             android:textColor="@color/white"
             android:textSize="10dp"
-            android:lineHeight="24dp"
+            android:lineHeight="12dp"
             android:includeFontPadding="false"
             android:fontFamily="@font/misans" />
 

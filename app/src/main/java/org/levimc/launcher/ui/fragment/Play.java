@@ -119,9 +119,7 @@ public class Play extends Fragment {
 
     @SuppressLint({"ClickableViewAccessibility", "UnsafeIntentLaunch"})
     private void initListeners() {
-        binding.launchButton.setOnClickListener(v -> {launchGame();
-            Toast.makeText(getContext(), "launch", Toast.LENGTH_SHORT).show();
-        });
+        binding.launchButton.setOnClickListener(v -> launchGame());
         binding.selectVersionButton.setOnClickListener(v -> showVersionSelectDialog());
 
     }
@@ -180,10 +178,10 @@ public class Play extends Fragment {
         String display = versionManager.getSelectedVersion() != null ?
                 versionManager.getSelectedVersion().displayName : getString(R.string.not_found_version);
         binding.textMinecraftVersion.setText(TextUtils.isEmpty(display) ? getString(R.string.not_found_version) : display);
-        updateAbiLabel();
+//        updateAbiLabel();
     }
 
-    private void updateAbiLabel() {
+   /* private void updateAbiLabel() {
         if (binding == null) return;
         TextView abiLabel = binding.abiLabel;
         String abiList = (versionManager.getSelectedVersion() != null) ? versionManager.getSelectedVersion().abiList : null;
@@ -199,6 +197,8 @@ public class Play extends Fragment {
             case "x86_64" -> R.drawable.bg_abi_x86_64;
             default -> R.drawable.bg_abi_default;
         };
-//        abiLabel.setBackgroundResource(bgRes);
-    }
+        abiLabel.setBackgroundResource(bgRes);
+    } */
+
+
 }
