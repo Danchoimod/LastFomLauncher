@@ -1,6 +1,6 @@
 <resources>
     <!-- Common -->
-    <string name="app_name">LeviLauncher</string>
+    <string name="app_name">LF launcher</string>
     <string name="minecraft">Minecraft</string>
     <string name="version">Version</string>
     <string name="launch">Launch</string>

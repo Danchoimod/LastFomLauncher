@@ -8,5 +8,9 @@
     </style>
     <style name="LegacyEditText" parent="@style/Widget.AppCompat.EditText">
         <item name="android:background">?attr/editTextBackground</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 </resources>

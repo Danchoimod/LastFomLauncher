@@ -1,17 +1,32 @@
 package org.levimc.launcher.ui.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.minecraft.MinecraftLauncher;
+import org.levimc.launcher.core.mods.FileHandler;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.versions.VersionManager;
 import org.levimc.launcher.databinding.FragmentPlayBinding;
+import org.levimc.launcher.settings.FeatureSettings;
+import org.levimc.launcher.ui.activities.MainActivity;
 import org.levimc.launcher.ui.dialogs.GameVersionSelectDialog;
 import org.levimc.launcher.ui.dialogs.gameversionselect.BigGroup;
 import org.levimc.launcher.ui.dialogs.gameversionselect.VersionUtil;
 import org.levimc.launcher.ui.views.MainViewModel;
+import org.levimc.launcher.ui.views.MainViewModelFactory;
+import org.levimc.launcher.util.ApkImportManager;
+import org.levimc.launcher.util.LanguageManager;
+import org.levimc.launcher.util.PermissionsHandler;
+import org.levimc.launcher.util.UIHelper;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +37,9 @@ import android.widget.Toast;
 import java.util.List;
 
 public class Play extends Fragment {
+    static {
+        System.loadLibrary("leviutils");
+    }
     public interface PlayListener {
         void onPlayClicked();
     }
@@ -31,6 +49,9 @@ public class Play extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private String mParam1;
+
+    private PermissionsHandler permissionsHandler;
+    private ActivityResultLauncher<Intent> permissionResultLauncher;
     private String mParam2;
     private FragmentPlayBinding binding;
     private MinecraftLauncher minecraftLauncher;
@@ -62,7 +83,7 @@ public class Play extends Fragment {
         // Khởi tạo managers tại đây nếu cần
         versionManager = VersionManager.get(getContext());
         versionManager.loadAllVersions();
-        minecraftLauncher = new MinecraftLauncher(getContext(), ClassLoader.getSystemClassLoader());
+        minecraftLauncher = new MinecraftLauncher(requireActivity(), requireActivity().getClassLoader());
         return binding.getRoot();
     }
 
@@ -83,17 +104,18 @@ public class Play extends Fragment {
     private void launchGame() {
         binding.launchButton.setEnabled(false);
         binding.progressLoader.setVisibility(View.VISIBLE);
-        new Thread(() -> {
-            GameVersion version = versionManager != null ? versionManager.getSelectedVersion() : null;
-            minecraftLauncher.launch(requireActivity().getIntent(), version);
-            requireActivity().runOnUiThread(() -> {
-                if (binding != null) {
-                    binding.progressLoader.setVisibility(View.GONE);
-                    binding.launchButton.setEnabled(true);
-                }
-            });
-        }).start();
+
+        GameVersion version = versionManager != null ? versionManager.getSelectedVersion() : null;
+        minecraftLauncher.launch(requireActivity().getIntent(), version);
+
+        requireActivity().runOnUiThread(() -> {
+            if (binding != null) {
+                binding.progressLoader.setVisibility(View.GONE);
+                binding.launchButton.setEnabled(true);
+            }
+        });
     }
+
 
     @SuppressLint({"ClickableViewAccessibility", "UnsafeIntentLaunch"})
     private void initListeners() {
@@ -101,8 +123,34 @@ public class Play extends Fragment {
             Toast.makeText(getContext(), "launch", Toast.LENGTH_SHORT).show();
         });
         binding.selectVersionButton.setOnClickListener(v -> showVersionSelectDialog());
-    }
 
+    }
+    private void setupManagersAndHandlers() {
+        // Nếu muốn ViewModel scope theo Fragment:
+        viewModel = new ViewModelProvider(this, new MainViewModelFactory(requireActivity().getApplication()))
+                .get(MainViewModel.class);
+
+        // VersionManager lấy context của Fragment
+        versionManager = VersionManager.get(requireContext());
+        versionManager.loadAllVersions();
+
+        // MinecraftLauncher nhận context là activity, classloader cũng từ activity
+        minecraftLauncher = new MinecraftLauncher(requireActivity(), requireActivity().getClassLoader());
+
+        // ActivityResultLauncher cho Fragment
+        permissionResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (permissionsHandler != null)
+                        permissionsHandler.onActivityResult(result.getResultCode(), result.getData());
+                }
+        );
+
+        permissionsHandler = PermissionsHandler.getInstance();
+        permissionsHandler.setActivity(requireActivity(), permissionResultLauncher);
+
+        initListeners();
+    }
     private void updateViewModelVersion() {
         GameVersion selectedVersion = versionManager.getSelectedVersion();
         if (selectedVersion != null && viewModel != null) {
