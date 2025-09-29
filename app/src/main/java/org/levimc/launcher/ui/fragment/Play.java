@@ -91,6 +91,7 @@ public class Play extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initListeners();
+        setupManagersAndHandlers();
         setTextMinecraftVersion();
         updateViewModelVersion();
     }

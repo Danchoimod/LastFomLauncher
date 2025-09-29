@@ -1,18 +1,47 @@
 package org.levimc.launcher.ui.fragment;
 
+import static android.app.Activity.RESULT_OK;
+import org.levimc.launcher.core.mods.FileHandler;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-
-import org.levimc.launcher.R;
 import androidx.activity.result.ActivityResultLauncher;
+import org.levimc.launcher.R;
+import org.levimc.launcher.core.minecraft.MinecraftLauncher;
+import org.levimc.launcher.core.versions.VersionManager;
+import org.levimc.launcher.databinding.ActivityMainBinding;
+import org.levimc.launcher.databinding.FragmentJavaInstalltionBinding;
+import org.levimc.launcher.databinding.FragmentPlayBinding;
+import org.levimc.launcher.settings.FeatureSettings;
+import org.levimc.launcher.ui.activities.MainActivity;
+import org.levimc.launcher.ui.adapter.VersionAdapter;
+import org.levimc.launcher.ui.dialogs.gameversionselect.BigGroup;
+import org.levimc.launcher.ui.dialogs.gameversionselect.UltimateVersionAdapter;
+import org.levimc.launcher.ui.dialogs.gameversionselect.VersionGroup;
+import org.levimc.launcher.ui.views.MainViewModel;
+import org.levimc.launcher.ui.views.MainViewModelFactory;
+import org.levimc.launcher.util.ApkImportManager;
+import org.levimc.launcher.util.LanguageManager;
+import org.levimc.launcher.util.PermissionsHandler;
+import org.levimc.launcher.util.UIHelper;
+
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.logging.FileHandler;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import org.levimc.launcher.core.versions.GameVersion;
+
+import java.util.ArrayList;
+import java.util.List;
+
+//import java.util.logging.FileHandler;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,12 +59,20 @@ public class javaInstalltion extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private ApkImportManager apkImportManager;
     private TextView importApk;
-
+    private ActivityResultLauncher<Intent> permissionResultLauncher;
+    private VersionManager versionManager;
+    private PermissionsHandler permissionsHandler;
+    private MainViewModel viewModel;
+    private UltimateVersionAdapter ultimateVersionAdapter;
     public javaInstalltion() {
         // Required empty public constructor
     }
+    static {
+        System.loadLibrary("leviutils");
+    }
+    private FragmentJavaInstalltionBinding binding;
 
     /**
      * Use this factory method to create a new instance of
@@ -69,10 +106,119 @@ public class javaInstalltion extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_java_installtion, container, false);
+        binding = FragmentJavaInstalltionBinding.inflate(inflater, container, false);
+        initListeners();
+        setupManagersAndHandlers();
+        return binding.getRoot();
 
-        return root;
     }
+    @SuppressLint({"ClickableViewAccessibility", "UnsafeIntentLaunch"})
+    private void initListeners() {
+        binding.importApkButton.setOnClickListener(v -> startFilePicker("application/vnd.android.package-archive", apkImportResultLauncher));
+//        binding.deleteVersionButton.setOnClickListener(v -> showDeleteVersionDialog());
+    }
+    private void startFilePicker(String type, ActivityResultLauncher<Intent> launcher) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(type);
+        launcher.launch(intent);
+    }
+    private void setupManagersAndHandlers() {
+        // Nếu muốn ViewModel scope theo Fragment:
+        viewModel = new ViewModelProvider(this, new MainViewModelFactory(requireActivity().getApplication()))
+                .get(MainViewModel.class);
+        // VersionManager lấy context của Fragment
+        versionManager = VersionManager.get(requireContext());
+        versionManager.loadAllVersions();
+        // Nhóm các phiên bản thành BigGroup/VersionGroup giống dialog
+        List<GameVersion> installed = versionManager.getInstalledVersions();
+        List<GameVersion> custom = versionManager.getCustomVersions();
+        List<BigGroup> bigGroups = new ArrayList<>();
+        // Nhóm chính: Phiên bản cài đặt (Official)
+        BigGroup installedGroup = new BigGroup(R.string.installed_versions);
+        VersionGroup installedVerGroup = new VersionGroup("Official");
+        installedVerGroup.versions.addAll(installed);
+        installedGroup.versionGroups.add(installedVerGroup);
+        bigGroups.add(installedGroup);
+        // Nhóm phụ: Phiên bản tuỳ chỉnh (Custom)
+        if (!custom.isEmpty()) {
+            BigGroup customGroup = new BigGroup(R.string.custom_versions);
+            VersionGroup customVerGroup = new VersionGroup("Custom");
+            customVerGroup.versions.addAll(custom);
+            customGroup.versionGroups.add(customVerGroup);
+            bigGroups.add(customGroup);
+        }
+        // Khởi tạo UltimateVersionAdapter và set cho RecyclerView
+        ultimateVersionAdapter = new UltimateVersionAdapter(requireContext(), bigGroups);
+        RecyclerView rv = binding.rvInstallations;
+        rv.setLayoutManager(new LinearLayoutManager(getContext()));
+        rv.setAdapter(ultimateVersionAdapter);
+        // ActivityResultLauncher cho Fragment
+        permissionResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (permissionsHandler != null)
+                        permissionsHandler.onActivityResult(result.getResultCode(), result.getData());
+                }
+        );
+        // Khởi tạo ApkImportManager đúng chuẩn: truyền requireActivity() thay vì requireContext()
+        // Đăng ký ActivityResultLauncher cho import APK
+        apkImportResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (apkImportManager != null)
+                        apkImportManager.handleActivityResult(result.getResultCode(), result.getData());
+                }
+        );
+        // Gắn sự kiện cho nút import APK
+        binding.importApkButton.setOnClickListener(v -> startFilePicker("application/vnd.android.package-archive", apkImportResultLauncher));
+
+        soImportResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null && fileHandler != null) {
+                        fileHandler.processIncomingFilesWithConfirmation(result.getData(), new org.levimc.launcher.core.mods.FileHandler.FileOperationCallback() {
+                            @Override
+                            public void onSuccess(int processedFiles) {
+                                UIHelper.showToast(getContext(), getString(R.string.files_processed, processedFiles));
+                            }
+
+                            @Override
+                            public void onError(String errorMessage) {
+                            }
+
+                            @Override
+                            public void onProgressUpdate(int progress) {
+                                if (binding != null) binding.progressLoader.setProgress(progress);
+                            }
+                        }, true);
+                    }
+                }
+        );
+
+        permissionsHandler = PermissionsHandler.getInstance();
+        permissionsHandler.setActivity(requireActivity(), permissionResultLauncher);
+        initListeners();
+    }
+//    private void handleIncomingFiles() {
+//        if (fileHandler == null) return;
+//        fileHandler.processIncomingFilesWithConfirmation(getContext(), new org.levimc.launcher.core.mods.FileHandler.FileOperationCallback() {
+//            @Override
+//            public void onSuccess(int processedFiles) {
+//                if (processedFiles > 0)
+//                    UIHelper.showToast(getContext(), getString(R.string.files_processed, processedFiles));
+//            }
+//
+//            @Override
+//            public void onError(String errorMessage) {
+//            }
+//
+//            @Override
+//            public void onProgressUpdate(int progress) {
+//                if (binding != null) binding.progressLoader.setProgress(progress);
+//            }
+//        }, false);
+//    }
 
 
 }
