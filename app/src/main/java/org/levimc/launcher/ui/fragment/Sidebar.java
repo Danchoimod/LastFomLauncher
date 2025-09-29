@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -112,7 +113,8 @@ public class Sidebar extends Fragment {
 
         // Click listeners
         javaEdition.setOnClickListener(v -> {
-            toggleSelection(javaEdition);
+//            toggleSelection(javaEdition);
+            Toast.makeText(requireContext(), "Coming Soon", Toast.LENGTH_SHORT).show();
 
         });
         btnSettings.setOnClickListener(v -> {
@@ -125,6 +127,7 @@ public class Sidebar extends Fragment {
         });
         llHome.setOnClickListener(v -> {
             toggleSelection(llHome);
+            openFragment(new Home());
         });
         llNews.setOnClickListener(v -> {
             openFragment(new What_new());

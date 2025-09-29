@@ -232,4 +232,6 @@
     <string name="a10">Go to aka.ms/ManageChildSettingsFAQ for information on how to edit these settings to help fix your problem.</string>
     <string name="faq_title">Frequently asked questions</string>
     <string name="faq_intro">Here are some frequently asked questions about Minecraft: Bedrock Edition and the Minecraft Launcher.</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

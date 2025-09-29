@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:background="#262423">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp"
+            android:textSize="12dp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LF LAUNCHER"
+            android:textColor="#ffffff"
+            ></TextView>
+    </LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <!-- gamelayout -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/gamelayout"
+            android:background="#ffffffff"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true">
+
+
+            <ImageView
+                android:id="@+id/launcherlayoutImageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/mclive2025"
+                android:scaleType="centerCrop"
+                android:layout_centerInParent="true"
+                android:contentDescription="@null" />
+
+            <!-- Overlay Discord logo on top of the 'lastest' image -->
+            <!-- Thay ImageView bằng LinearLayout -->
+            <LinearLayout
+                android:padding="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/minecraft_logo"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/launcherlayoutImageView1"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:background="#191919"
+                android:elevation="2dp">
+
+                <!-- Ví dụ: thêm TextView bên trong -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New Launcher Mobile"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_marginVertical="10dp"
+                    android:layout_width="wrap_content"
+                    android:textSize="12dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text="LF Launcher test version"
+                    ></TextView>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="3dp"
+                    android:background="#309C66"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/white"
+                        android:textSize="12dp"
+                        android:textStyle="bold"
+                        android:text="Read more"
+                        ></TextView>
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
+    <LinearLayout
+        android:background="#262423"
+        android:layout_width="110dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:layout_height="match_parent">
+        <ImageView
+            android:alpha="0.5"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/mclive2025"
+            ></ImageView>
+        <ImageView
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/thumnail0"
+            ></ImageView>
+        <ImageView
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/thunail1"
+            ></ImageView>
+        <ImageView
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/thumnail2"
+            ></ImageView>
+    </LinearLayout>
+</LinearLayout>
+
+</LinearLayout>
