@@ -117,7 +117,6 @@ public class javaInstalltion extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentJavaInstalltionBinding.inflate(inflater, container, false);
-        initListeners();
         setupManagersAndHandlers();
         return binding.getRoot();
 
@@ -141,6 +140,7 @@ public class javaInstalltion extends Fragment {
         // Nếu muốn ViewModel scope theo Fragment:
         viewModel = new ViewModelProvider(this, new MainViewModelFactory(requireActivity().getApplication()))
                 .get(MainViewModel.class);
+
         // VersionManager lấy context của Fragment
         versionManager = VersionManager.get(requireContext());
         versionManager.loadAllVersions();
@@ -178,7 +178,7 @@ public class javaInstalltion extends Fragment {
         ultimateVersionAdapter.setOnVersionLongClickListener(version -> showDeleteVersionDialog(version));
         // Khởi tạo ApkImportManager đúng chuẩn: truyền requireActivity() thay vì requireContext()
         // Đăng ký ActivityResultLauncher cho import APK
-        apkImportResultLauncher = registerForActivityResult(
+        apkImportManager = new ApkImportManager(requireActivity(), viewModel);        apkImportResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (apkImportManager != null)
@@ -186,8 +186,6 @@ public class javaInstalltion extends Fragment {
                 }
         );
         // Gắn sự kiện cho nút import APK
-        binding.importApkButton.setOnClickListener(v -> startFilePicker("application/vnd.android.package-archive", apkImportResultLauncher));
-
         soImportResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -215,6 +213,7 @@ public class javaInstalltion extends Fragment {
         permissionsHandler.setActivity(requireActivity(), permissionResultLauncher);
         initListeners();
     }
+
 //    private void handleIncomingFiles() {
 //        if (fileHandler == null) return;
 //        fileHandler.processIncomingFilesWithConfirmation(getContext(), new org.levimc.launcher.core.mods.FileHandler.FileOperationCallback() {
