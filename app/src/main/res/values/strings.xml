@@ -33,8 +33,8 @@
 
     <string name="installed_packages">Installed Packages</string>
     <string name="local_custom">Local Custom</string>
-    <string name="installed_versions">Phiên bản đã cài đặt</string>
-    <string name="custom_versions">Phiên bản tuỳ chỉnh</string>
+    <string name="installed_versions">Installed</string>
+    <string name="custom_versions">Custom</string>
 
     <!-- Permissions -->
     <string name="storage_permission_title">Storage Permission Required</string>

@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingHorizontal="30dp"
     android:background="#171615"
     tools:context="org.levimc.launcher.ui.fragment.javaInstalltion">
 
@@ -18,6 +19,7 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         android:layout_marginTop="10dp"
+        android:layout_marginLeft="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
