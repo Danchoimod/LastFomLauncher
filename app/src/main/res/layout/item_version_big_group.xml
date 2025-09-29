@@ -6,7 +6,7 @@
     android:paddingEnd="16dp"
     android:textStyle="bold"
     android:fontFamily="@font/mcfontent"
-    android:textSize="22sp"
+    android:textSize="18sp"
     android:textColor="#FFFFFF"
     android:layout_marginTop="4dp"
     android:layout_marginBottom="2dp"

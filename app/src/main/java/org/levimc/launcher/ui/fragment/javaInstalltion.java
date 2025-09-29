@@ -15,6 +15,7 @@ import org.levimc.launcher.databinding.FragmentPlayBinding;
 import org.levimc.launcher.settings.FeatureSettings;
 import org.levimc.launcher.ui.activities.MainActivity;
 import org.levimc.launcher.ui.adapter.VersionAdapter;
+import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.dialogs.gameversionselect.BigGroup;
 import org.levimc.launcher.ui.dialogs.gameversionselect.UltimateVersionAdapter;
 import org.levimc.launcher.ui.dialogs.gameversionselect.VersionGroup;
@@ -33,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -68,6 +70,14 @@ public class javaInstalltion extends Fragment {
     private UltimateVersionAdapter ultimateVersionAdapter;
     public javaInstalltion() {
         // Required empty public constructor
+    }
+    public interface OnItemLongClickListener {
+        void onItemLongClick(GameVersion gameVersion);
+    }
+    private OnItemLongClickListener longClickListener;
+
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        this.longClickListener = listener;
     }
     static {
         System.loadLibrary("leviutils");
@@ -111,7 +121,10 @@ public class javaInstalltion extends Fragment {
         setupManagersAndHandlers();
         return binding.getRoot();
 
+
     }
+
+
     @SuppressLint({"ClickableViewAccessibility", "UnsafeIntentLaunch"})
     private void initListeners() {
         binding.importApkButton.setOnClickListener(v -> startFilePicker("application/vnd.android.package-archive", apkImportResultLauncher));
@@ -123,6 +136,7 @@ public class javaInstalltion extends Fragment {
         intent.setType(type);
         launcher.launch(intent);
     }
+
     private void setupManagersAndHandlers() {
         // Nếu muốn ViewModel scope theo Fragment:
         viewModel = new ViewModelProvider(this, new MainViewModelFactory(requireActivity().getApplication()))
@@ -136,14 +150,14 @@ public class javaInstalltion extends Fragment {
         List<BigGroup> bigGroups = new ArrayList<>();
         // Nhóm chính: Phiên bản cài đặt (Official)
         BigGroup installedGroup = new BigGroup(R.string.installed_versions);
-        VersionGroup installedVerGroup = new VersionGroup("Official");
+        VersionGroup installedVerGroup = new VersionGroup("Auto-detected, read-only info.");
         installedVerGroup.versions.addAll(installed);
         installedGroup.versionGroups.add(installedVerGroup);
         bigGroups.add(installedGroup);
         // Nhóm phụ: Phiên bản tuỳ chỉnh (Custom)
         if (!custom.isEmpty()) {
             BigGroup customGroup = new BigGroup(R.string.custom_versions);
-            VersionGroup customVerGroup = new VersionGroup("Custom");
+            VersionGroup customVerGroup = new VersionGroup("Import APK and launchable.");
             customVerGroup.versions.addAll(custom);
             customGroup.versionGroups.add(customVerGroup);
             bigGroups.add(customGroup);
@@ -161,6 +175,7 @@ public class javaInstalltion extends Fragment {
                         permissionsHandler.onActivityResult(result.getResultCode(), result.getData());
                 }
         );
+        ultimateVersionAdapter.setOnVersionLongClickListener(version -> showDeleteVersionDialog(version));
         // Khởi tạo ApkImportManager đúng chuẩn: truyền requireActivity() thay vì requireContext()
         // Đăng ký ActivityResultLauncher cho import APK
         apkImportResultLauncher = registerForActivityResult(
@@ -219,6 +234,30 @@ public class javaInstalltion extends Fragment {
 //            }
 //        }, false);
 //    }
+private void showDeleteVersionDialog(GameVersion version) {
+    new CustomAlertDialog(requireContext())
+            .setTitleText(getString(R.string.dialog_title_delete_version))
+            .setMessage(getString(R.string.dialog_message_delete_version))
+            .setPositiveButton(getString(R.string.dialog_positive_delete), v2 -> {
+                VersionManager.get(requireContext()).deleteCustomVersion(version,
+                        new VersionManager.OnDeleteVersionCallback() {
+                            @Override
+                            public void onDeleteCompleted(boolean success) {
+                                requireActivity().runOnUiThread(() -> {
+                                    Toast.makeText(requireContext(), getString(R.string.toast_delete_success), Toast.LENGTH_SHORT).show();
+                                    viewModel.setCurrentVersion(versionManager.getSelectedVersion());
+                                });
+                            }
+                            @Override
+                            public void onDeleteFailed(Exception e) {
+                                requireActivity().runOnUiThread(() ->
+                                        Toast.makeText(requireContext(), getString(R.string.toast_delete_failed, e.getMessage()), Toast.LENGTH_SHORT).show());
+                            }
+                        });
+            })
+            .setNegativeButton(getString(R.string.dialog_negative_cancel), null)
+            .show();
+}
 
 
 }
