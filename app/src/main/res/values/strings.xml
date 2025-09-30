@@ -234,4 +234,13 @@
     <string name="faq_intro">Here are some frequently asked questions about Minecraft: Bedrock Edition and the Minecraft Launcher.</string>
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="event1">Minecraft Live 2025</string>
+    <string name="event1_desc">Meet the nautilus and discover the spear, find out when the Copper Age drop releases, and grab an add-on for a good cause! See it all in the latest Minecraft LIVE!</string>
+    <string name="event2">Minecraft Friendly Fishing Add-On</string>
+    <string name="event2_desc">The main goal for this add-on is to fish (no surprise there). But it is not going to be an easy feat, as you need to ace the “tap” mini-game each</string>
+    <string name="event3">Soul Seekers</string>
+    <string name="event3_desc">Harness the mystical power of souls to enchant your tools and weapons with powerful enchantments and abilities with Giggle Block Studios</string>
+    <string name="event4">Cat Expansion Add-On</string>
+    <string name="event4_desc">Discover 20 amazing cats, each with their own special abilities! Ride, heal, enchant, or defend with your feline friends. Enjoy new armor, swords, ...</string>
 </resources>

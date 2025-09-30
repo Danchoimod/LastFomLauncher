@@ -135,13 +135,13 @@ public class Sidebar extends Fragment {
         });
 
         // Select Bedrock by default
-        toggleSelection(bedrockEdition);
+        toggleSelection(llHome);
 
         // Load BedrockContainer fragment at start
         if (savedInstanceState == null) {
             getChildFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.gamelayout, new BedrockContainer())
+                    .replace(R.id.gamelayout, new Home())
                     .commit();
         }
         return view;

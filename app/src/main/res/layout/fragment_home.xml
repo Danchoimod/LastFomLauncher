@@ -66,19 +66,22 @@
 
                 <!-- Ví dụ: thêm TextView bên trong -->
                 <TextView
+                    android:id="@+id/notfiTitle"
+                    android:fontFamily="@font/mcfont"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New Launcher Mobile"
+                    android:text="@string/event1"
                     android:textColor="@android:color/white"
-                    android:textSize="14sp"
+                    android:textSize="25sp"
                     android:textStyle="bold" />
                 <TextView
+                    android:id="@+id/notfiDecs"
                     android:layout_marginVertical="10dp"
                     android:layout_width="wrap_content"
                     android:textSize="12dp"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
-                    android:text="LF Launcher test version"
+                    android:text="@string/event1_desc"
                     ></TextView>
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -92,7 +95,7 @@
                         android:textColor="@color/white"
                         android:textSize="12dp"
                         android:textStyle="bold"
-                        android:text="Read more"
+                        android:text="Button"
                         ></TextView>
                 </LinearLayout>
             </LinearLayout>
@@ -105,13 +108,14 @@
         android:padding="5dp"
         android:layout_height="match_parent">
         <ImageView
-            android:alpha="0.5"
+            android:id="@+id/news1"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:scaleType="fitCenter"
             android:src="@drawable/mclive2025"
             ></ImageView>
         <ImageView
+            android:id="@+id/news2"
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
@@ -119,6 +123,7 @@
             android:src="@drawable/thumnail0"
             ></ImageView>
         <ImageView
+            android:id="@+id/news3"
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
@@ -126,6 +131,7 @@
             android:src="@drawable/thunail1"
             ></ImageView>
         <ImageView
+            android:id="@+id/news4"
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
