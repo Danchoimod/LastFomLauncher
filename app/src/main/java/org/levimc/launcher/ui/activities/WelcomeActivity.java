@@ -31,7 +31,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private Button launcher_play_button;
 
-    private Boolean logined = true; // vì đang test nên cho true, nhớ đổi lại false
+    private Boolean logined = false; // vì đang test nên cho true, nhớ đổi lại false
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,14 +64,15 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         });
         term.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+//            Intent intent = new Intent(this, DownloadData.class);
+//            startActivity(intent);
+//            finish();
+            Toast.makeText(this, "test", Toast.LENGTH_SHORT).show();
         });
 
         launcher_play_button.setOnClickListener(v -> {
             if (logined != false){
-                Intent intent = new Intent(this, MainLauncher.class);
+                Intent intent = new Intent(this, DownloadData.class);
                 startActivity(intent);
                 finish();
             }else{
@@ -134,8 +135,6 @@ public class WelcomeActivity extends AppCompatActivity {
                             .putString("avatar_url", avatarUrl)
                             .putString("username", username)
                             .apply();
-
-
                     Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // TODO: Chuyển màn hình, hoặc gọi API xác thực...
                 } catch (JSONException e) {

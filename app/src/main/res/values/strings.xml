@@ -202,9 +202,6 @@
     <string name="invalid_resource_pack_file">Invalid resource pack file</string>
     <string-array name="language_spinner_array">
         <item>English - United States</item>
-        <item>Tiếng Việt - Việt Nam</item>
-        <item>English - Canada</item>
-        <item>Japanese</item>
     </string-array>
     <array name="theme_spinner_array">
         <item>Lastest Update</item>
@@ -232,7 +229,7 @@
     <string name="a10">Go to aka.ms/ManageChildSettingsFAQ for information on how to edit these settings to help fix your problem.</string>
     <string name="faq_title">Frequently asked questions</string>
     <string name="faq_intro">Here are some frequently asked questions about Minecraft: Bedrock Edition and the Minecraft Launcher.</string>
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="event1">Minecraft Live 2025</string>

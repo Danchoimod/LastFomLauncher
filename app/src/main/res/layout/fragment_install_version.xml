@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#171615"
+    android:id="@+id/main"
+    tools:context=".ui.fragment.installVersion">
+<ImageView
+    android:id="@+id/btnBack"
+    android:layout_width="22dp"
+    android:src="@drawable/outline_arrow_back_24"
+    android:layout_height="22dp"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    ></ImageView>
+    <TextView
+        android:id="@+id/versiontitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Installation Version"
+        android:textColor="#FFFFFF"
+        android:paddingTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints"></TextView>
+    <ImageView
+        android:id="@+id/icon"
+        android:src="@drawable/java"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/versiontitle"
+        ></ImageView>
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_arrow_down"
+        android:tint="@color/gray"
+        app:layout_constraintLeft_toRightOf="@id/icon"
+        app:layout_constraintTop_toTopOf="@id/icon"
+        app:layout_constraintBottom_toBottomOf="@id/icon"
+        ></ImageView>
+
+    <Spinner
+
+        android:layout_marginTop="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/icon"
+        app:layout_constraintStart_toStartOf="@id/icon"
+        app:layout_constraintEnd_toEndOf="@id/icon"
+        ></Spinner>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,14 +6,18 @@
     android:layout_marginStart="0dp"
     android:layout_marginEnd="12dp"
     >
-
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_vertical"
+        android:scaleType="centerInside"
+        android:src="@drawable/java"></ImageView>
 
     <LinearLayout
         android:id="@+id/linear_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="52dp"
-        android:background="#FFFFFF"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
         android:paddingTop="10dp"
@@ -24,11 +28,11 @@
         android:focusable="true">
 
         <TextView
-            android:fontFamily="@font/mcfont"
             android:id="@+id/tv_version_name_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#666666"/>
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="#CECECE"/>
     </LinearLayout>
 </FrameLayout>

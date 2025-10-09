@@ -1,12 +1,52 @@
 [
   {
-    "date": "TUESDAY, SEPTEMBER 9, 2025",
-    "version": "3.19.27",
-    "description": "Pixel Drift video released in the Launcher.\nFixes in text size & high contrast mode.\nVarious other bug fixes & under the hood improvements."
+    "date": "Posted: October 2025",
+    "version": "1.1.3",
+    "description": "This update brings major improvements to the launcher, authentication, store, and website.\n\nAdditions:\n- Changed welcome screen and authentication to use Discord\n- Upgraded store system with added coins\n- Launcher interface now resembles 93% of the PC launcher\n- Allows saving and opening multiple versions\n- Added mod support in the launcher to install features not available in vanilla Minecraft\n- Updated splash screen to match the original launcher with improved animation\n\nChanges:\n- Enhanced website system\n- Improved overall launcher performance and UI"
   },
   {
-    "date": "THURSDAY, AUGUST 7, 2025",
-    "version": "3.18.4",
-    "description": "Buy Minecoins coming soon.\nFixes to Java Realms pathways.\nSmoothing & bug fixes for better UX."
+    "date": "Posted: April 2025",
+    "version": "1.1.2",
+    "description": "A new update has been released for LF Launcher introducing major improvements and new language support.\nThis update also enhances the offline launcher experience and expands compatibility with multiple Minecraft clients.\n\nAdditions:\n- Added launcher terms of service\n- Removed login, replaced with full offline mode\n- Added support for launching 3 versions (Atlas Client and Patch)\n- Added pre-loading system before entering Minecraft\n- Added 2 new languages: Chinese and Arabic\n- Added a welcome notification\n\nChanges:\n- Launcher UI now resembles the Java Edition by 89%"
+  },
+  {
+    "date": "Posted: March 2025",
+    "version": "1.1.1",
+    "description": "This update focuses on connectivity improvements, store expansion, and more flexible installation management.\n\nAdditions:\n- Added network connection check screen\n- Added skin and mod stores\n- Added in-launcher downloading and rating system for skins and mods\n\nChanges:\n- Redesigned settings and download interfaces\n- Added ability to rename and delete installed Minecraft versions directly"
+  },
+  {
+    "date": "Posted: January 2025",
+    "version": "0.1.5",
+    "description": "This major update brings new visuals, version management, and broader language support.\n\nAdditions:\n- New splash screen\n- Added quick version switch popup\n- Added APK downloader for all Minecraft PE versions\n- Added feature menu as a popup window\n- Added account registration and login system\n\nChanges:\n- Optimized UI and version management system\n- Added version manager for installing or removing versions\n- Added 3 new languages: Vietnamese, Spanish, Russian"
+  },
+  {
+    "date": "Posted: July 2024",
+    "version": "0.1.4.1",
+    "description": "LF Launcher now introduces its new identity and branding updates.\n\nAdditions:\n- Changed splash screen to “Lastfom Studio”\n- Added Release Notes and “About” screen with launcher details\n- Added official launcher website\n\nChanges:\n- Renamed to LF Launcher (formerly “Minecraft Launcher”)\n- Updated mouse cursor design"
+  },
+  {
+    "date": "Posted: February 2024",
+    "version": "0.1.4.0",
+    "description": "A large update bringing mobile support and new in-launcher experiences.\n\nAdditions:\n- Added mobile layout\n- Added update notifications\n- Added End Poem from Minecraft\n- Added new coordinates and puppet feature for launcher Minecraft\n\nChanges:\n- Switch between PC and Mobile layouts\n- Updated splash screen and RAM management\n- Added multi-version download and logcat support"
+  },
+  {
+    "date": "Posted: December 2023",
+    "version": "0.1.3",
+    "description": "UI redesign and feature expansion toward Java Edition–style experience.\n\nAdditions:\n- New Windows 10–style interface, now 80% similar to Java Edition\n- Added in-launcher store\n- Added website for skin customization\n\nChanges:\n- Updated to version 0.15.4\n- Added ability to change player name inside the launcher"
+  },
+  {
+    "date": "Posted: November 2023",
+    "version": "0.1.2",
+    "description": "Major launcher redesign for Java Edition–style interface and customization support.\n\nAdditions:\n- New launcher design (67% similar to Java Edition)\n- Added skin download via WebView\n- Added language switching\n- Added lightweight shaders for low-end devices\n\nChanges:\n- Added support for opening original Minecraft installation on device"
+  },
+  {
+    "date": "Posted: September 2023",
+    "version": "0.1.1",
+    "description": "UI redesign inspired by Minecraft Java Edition and PS3-style interface.\n\nAdditions:\n- Redesigned interface similar to Minecraft Java Edition launcher\n- Added in-game music menu (PS3-style)\n- Added server list to join directly from launcher\n\nChanges:\n- New app icon"
+  },
+  {
+    "date": "Posted: August 2023",
+    "version": "0.1.0",
+    "description": "Initial launcher release introducing Windows 10–style interface and Java-inspired splash screen.\n\nAdditions:\n- Added splash screen inspired by Minecraft Java Edition\n- Added Windows 10–style UI\n\nChanges:\n- Improved visual performance by removing particles in version 0.14.0"
   }
 ]

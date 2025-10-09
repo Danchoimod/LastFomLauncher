@@ -1,5 +1,7 @@
 package org.levimc.launcher.ui.fragment;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -75,6 +77,12 @@ public class Home extends Fragment {
             binding.notfiDecs.setText(R.string.event1_desc);
             binding.launcherlayoutImageView1.setImageResource(R.drawable.mclive2025);
         });
+        binding.btnRead.setOnClickListener(v -> {
+            String url = "https://www.minecraft.net/en-us/article/minecraft-live-2025-recap";
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+        });
+
         binding.news2.setOnClickListener(v -> {
             changeBg(2);
             binding.launcherlayoutImageView1.setImageResource(R.drawable.thumnail0);

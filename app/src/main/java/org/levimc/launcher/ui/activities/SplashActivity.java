@@ -2,6 +2,7 @@ package org.levimc.launcher.ui.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
@@ -35,9 +36,7 @@ public class SplashActivity extends BaseActivity {
         startAppNameAnimation();
 
         tvAppName.postDelayed(() -> {
-            Intent newIntent = new Intent(this, WelcomeActivity.class);
-            startActivity(newIntent);
-            finish();
+            checkLogin();
         }, 3000);
         Glide.with(this) // hoặc getApplicationContext()
                 .asGif()
@@ -69,5 +68,18 @@ public class SplashActivity extends BaseActivity {
         alphaAnimation.setDuration(2000);
         alphaAnimation.setFillAfter(true);
         tvAppName.startAnimation(alphaAnimation);
+    }
+    private void checkLogin() {
+        SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
+
+        if (prefs.getString("username", null) != null) {
+            Intent intent = new Intent(this, MainLauncher.class);
+            startActivity(intent);
+            finish();
+        } else {
+            Intent intent = new Intent(this, WelcomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

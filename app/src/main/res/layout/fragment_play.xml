@@ -7,8 +7,6 @@
     android:baselineAligned="false"
     android:background="#FFFFFFFF">
 
-
-
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -30,8 +28,6 @@
                 android:layout_height="35dp"
                 android:layout_alignParentBottom="true"
                 android:contentDescription="@null" />
-            <!--            thanh công cụ -->
-
 
             <TextView
 
@@ -58,14 +54,17 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingEnd="8dp">
-
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/grassblock"
+            ></ImageView>
         <TextView
             android:id="@+id/text_minecraft_version"
             android:layout_width="wrap_content"
-            android:text="0.11.0"
+            android:text="0.14.0"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:drawableStart="@drawable/ic_minecraft_cube"
             android:gravity="center_vertical"
             android:textColor="@color/white"
             android:textSize="10dp"
@@ -96,7 +95,7 @@
                 android:id="@+id/launcherlayoutImageView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/lastest"
+                android:src="@drawable/copperupdate"
                 android:scaleType="centerCrop"
                 android:layout_above="@id/launcherlayoutImageView2"
                 android:layout_centerInParent="true"
