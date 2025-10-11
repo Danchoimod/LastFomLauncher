@@ -110,6 +110,7 @@
                     android:layout_height="wrap_content">
 
                     <CheckBox
+                        android:id="@+id/lisenseCheck"
                         android:layout_marginLeft="10dp"
                         android:layout_width="20dp"
                         android:layout_height="20dp"

@@ -3,16 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_rounded_card"
     android:orientation="vertical"
     android:minWidth="360dp"
+    android:background="@color/white"
     android:padding="20dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/version_name"
-        android:textColor="#4CAF50"
+        android:textColor="#333333"
         android:textSize="18sp"
         android:textStyle="bold"/>
 
@@ -44,14 +44,17 @@
         android:gravity="end"
         android:layout_marginTop="20dp">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
+            android:background="#F5F5F5"
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
+            android:background="#008543"
             android:id="@+id/btn_install"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/install"

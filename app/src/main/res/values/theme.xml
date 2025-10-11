@@ -13,7 +13,7 @@
         <item name="android:colorBackground">@color/background</item>
         <item name="colorOnBackground">@color/on_background</item>
         <item name="colorOutline">@color/outline</item>
-
+        <item name="backgroundTint">?attr/colorPrimary</item>
         <item name="android:windowBackground">@color/background</item>
 
         <item name="android:statusBarColor">@android:color/transparent</item>

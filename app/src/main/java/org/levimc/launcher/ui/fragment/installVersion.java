@@ -65,13 +65,6 @@ public class installVersion extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentInstallVersionBinding.inflate(getLayoutInflater(), container, false);
         View root = binding.getRoot();
-        binding.btnBack.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main, new javaInstalltion()) // R.id.main nằm trong Activity
-                    .addToBackStack(null)
-                    .commit();
-        });
 
 
 

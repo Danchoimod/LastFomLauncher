@@ -39,6 +39,7 @@ public class ApkImportManager {
                     })
                     .show();
             return;
+
         }
         ApkVersionConfirmDialog dialog = new ApkVersionConfirmDialog()
                 .setInitialVersionName(initialVersionName)

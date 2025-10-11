@@ -12,8 +12,10 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.levimc.launcher.R;
 
@@ -22,6 +24,7 @@ public class SplashActivity extends BaseActivity {
 
     ImageView imgLeaf;
     ImageView tvAppName;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +73,9 @@ public class SplashActivity extends BaseActivity {
         tvAppName.startAnimation(alphaAnimation);
     }
     private void checkLogin() {
+        // kiểm tra users đã authenticated chưa, nếu users có localsharedpreferences thì đã authenticated,
+        // nhưng chưa kiểm tra index + 1 trong database đã trùng với local shared
         SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
-
         if (prefs.getString("username", null) != null) {
             Intent intent = new Intent(this, MainLauncher.class);
             startActivity(intent);

@@ -83,6 +83,10 @@
     <string name="check_update">Check for updates</string>
     <string name="version_prefix">Version: </string>
 
+    <string name="coming_soon">Comming soon</string>
+    <string name="coming_soon_desc">This feature is under development and will be available soon</string>
+
+    <string name="ok">OK</string>
 
     <string name="new_version_found">New version found: %1$s</string>
     <string name="update_question">Do you want to download and install the latest version?</string>

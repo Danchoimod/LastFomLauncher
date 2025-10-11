@@ -99,7 +99,7 @@ public class DownloadData extends BaseActivity {
                             if (progress == 25 || progress == 50 || progress == 75) {
                                 int finalProgress = progress;
                                 runOnUiThread(() ->
-                                        Toast.makeText(this, "📥 Đang tải... " + finalProgress + "%", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, " Đang tải... " + finalProgress + "%", Toast.LENGTH_SHORT).show()
                                 );
                             }
                         }
@@ -120,10 +120,10 @@ public class DownloadData extends BaseActivity {
             runOnUiThread(() -> {
                 if (finalSuccess) {
                     progressBar.setProgress(100);
-                    Toast.makeText(this, "✅ Tải dữ liệu thành công!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, " Tải dữ liệu thành công!", Toast.LENGTH_LONG).show();
                     goToNextScreen();
                 } else {
-                    Toast.makeText(this, "❌ Tải dữ liệu thất bại. Kiểm tra kết nối mạng.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, " Tải dữ liệu thất bại. Kiểm tra kết nối mạng.", Toast.LENGTH_LONG).show();
                     progressBar.setProgress(0);
                 }
             });

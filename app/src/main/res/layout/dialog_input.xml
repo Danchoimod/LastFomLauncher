@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_rounded_card"
     android:orientation="vertical"
     android:minWidth="360dp"
     android:padding="24dp">
@@ -34,7 +33,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@drawable/bg_item_rounded"
         android:fontFamily="@font/misans"
         android:hint="Enter text"
         android:inputType="text"
@@ -63,15 +61,15 @@
             android:textColor="@color/on_surface"
             android:textSize="16sp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_positive"
+            android:background="#008543"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/primary"
             android:fontFamily="@font/misans"
             android:minWidth="80dp"
             android:text="@string/confirm"
-            android:textColor="@color/on_primary"
+            android:textColor="@color/white"
             android:textSize="16sp" />
 
     </LinearLayout>

@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import org.levimc.launcher.R;
+import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,7 +116,7 @@ public class Sidebar extends Fragment {
         // Click listeners
         javaEdition.setOnClickListener(v -> {
 //            toggleSelection(javaEdition);
-            Toast.makeText(requireContext(), "Coming Soon", Toast.LENGTH_SHORT).show();
+            commingSoon();
 
         });
         btnSettings.setOnClickListener(v -> {
@@ -158,6 +160,13 @@ public class Sidebar extends Fragment {
         for (LinearLayout layout : layouts) {
             layout.setSelected(layout == selectedLayout);
         }
+    }
+    private void commingSoon(){
+        new CustomAlertDialog(getContext())
+                .setTitleText(getString(R.string.coming_soon))
+                .setMessage(getString(R.string.coming_soon_desc))
+                .setPositiveButton(getString(R.string.ok), null)
+                .show();
     }
 
 }

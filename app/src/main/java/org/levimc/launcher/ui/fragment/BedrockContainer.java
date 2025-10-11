@@ -2,6 +2,8 @@ package org.levimc.launcher.ui.fragment;
 
 import android.os.Bundle;
 import org.levimc.launcher.R;
+import org.levimc.launcher.databinding.FragmentBedrockContainerBinding;
+import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 
 import androidx.fragment.app.Fragment;
 
@@ -35,6 +37,8 @@ public class BedrockContainer extends Fragment {
     private TextView btnNavPatchNotes;
 
     private TextView btnMarketplace;
+
+    private FragmentBedrockContainerBinding binding;
 
     private TextView btnModules;
     public BedrockContainer() {
@@ -89,9 +93,9 @@ public class BedrockContainer extends Fragment {
             btnNavPlay.setOnClickListener(v -> changeFragment(1));
             btnNavInstallation.setOnClickListener(v -> changeFragment(2));
             btnNavFAQ.setOnClickListener(v -> changeFragment(3));
-            btnNavPatchNotes.setOnClickListener(v -> changeFragment(4));
-            btnMarketplace.setOnClickListener(v -> changeFragment(5));
-            btnModules.setOnClickListener(v -> changeFragment(6));
+            btnNavPatchNotes.setOnClickListener(v -> commingSoon());
+            btnMarketplace.setOnClickListener(v -> commingSoon());
+            btnModules.setOnClickListener(v -> commingSoon());
         }
         return view;
     }
@@ -122,8 +126,9 @@ public class BedrockContainer extends Fragment {
                 showGreen(4);
                 break;
             case 6:
-                showGreen(5);
-                return; // No fragment to show, exit early
+//                showGreen(5);
+//                return; // No fragment to show, exit early
+                commingSoon();
             default:
                 throw new IllegalArgumentException("Screen number không hợp lệ: " + screenOfNumber);
         }
@@ -148,6 +153,13 @@ public class BedrockContainer extends Fragment {
             View v = getView().findViewById(greenIds[index]);
             if (v != null) v.setVisibility(View.VISIBLE);
         }
+    }
+    private void commingSoon(){
+        new CustomAlertDialog(getContext())
+                .setTitleText(getString(R.string.coming_soon))
+                .setMessage(getString(R.string.coming_soon_desc))
+                .setPositiveButton(getString(R.string.ok), null)
+                .show();
     }
 
 

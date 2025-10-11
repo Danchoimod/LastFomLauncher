@@ -3,6 +3,8 @@ package org.levimc.launcher.ui.activities;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
+
 import java.util.List;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -30,6 +32,8 @@ import org.levimc.launcher.util.UIHelper;
 
 public class MainLauncher extends AppCompatActivity {
     private VersionManager versionManager;
+    private MainViewModel viewModel;
+    private PermissionsHandler permissionsHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +60,7 @@ public class MainLauncher extends AppCompatActivity {
         }
     }
     private void setupManagersAndHandlers() {
+        viewModel = new ViewModelProvider(this, new MainViewModelFactory(getApplication())).get(MainViewModel.class);
         versionManager = VersionManager.get(this);
         versionManager.loadAllVersions();
 
@@ -73,7 +78,26 @@ public class MainLauncher extends AppCompatActivity {
             showEulaDialog();
         }
     }
+    private void requestBasicPermissions() {
+        permissionsHandler.requestPermission(PermissionsHandler.PermissionType.STORAGE,
+                new PermissionsHandler.PermissionResultCallback() {
+                    @Override
+                    public void onPermissionGranted(PermissionsHandler.PermissionType type) {
+                        if (type == PermissionsHandler.PermissionType.STORAGE) {
+                            viewModel.refreshMods();
+                        }
+                    }
 
+                    @Override
+                    public void onPermissionDenied(PermissionsHandler.PermissionType type, boolean permanentlyDenied) {
+                        if (type == PermissionsHandler.PermissionType.STORAGE) {
+                            Toast.makeText(MainLauncher.this, R.string.storage_permission_not_granted, Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                }
+        );
+    }
     private void showEulaDialog() {
         CustomAlertDialog dia = new CustomAlertDialog(this)
                 .setTitleText(getString(R.string.eula_title))

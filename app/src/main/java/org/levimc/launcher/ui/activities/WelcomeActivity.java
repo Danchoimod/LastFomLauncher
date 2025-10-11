@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.levimc.launcher.R;
+import org.levimc.launcher.databinding.ActivityWelcomeBinding;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -31,13 +32,16 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private Button launcher_play_button;
 
-    private Boolean logined = false; // vì đang test nên cho true, nhớ đổi lại false
+    private ActivityWelcomeBinding binding;
+
+    private Boolean logined = true; // vì đang test nên cho true, nhớ đổi lại false
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_welcome);
+        binding = ActivityWelcomeBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -67,16 +71,16 @@ public class WelcomeActivity extends AppCompatActivity {
 //            Intent intent = new Intent(this, DownloadData.class);
 //            startActivity(intent);
 //            finish();
-            Toast.makeText(this, "test", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "this is a beta test version", Toast.LENGTH_SHORT).show();
         });
 
         launcher_play_button.setOnClickListener(v -> {
-            if (logined != false){
+            if (logined != false && binding.lisenseCheck.isChecked()){
                 Intent intent = new Intent(this, DownloadData.class);
                 startActivity(intent);
                 finish();
-            }else{
-                Toast.makeText(this, "Please log in", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(this, "Please log in & accept lisencse", Toast.LENGTH_SHORT).show();
             }
         });
 
