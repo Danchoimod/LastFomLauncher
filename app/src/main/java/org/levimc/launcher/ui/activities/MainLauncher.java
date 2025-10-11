@@ -1,5 +1,6 @@
 package org.levimc.launcher.ui.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.widget.Toast;
 
 import java.util.List;
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -33,6 +35,7 @@ import org.levimc.launcher.util.UIHelper;
 public class MainLauncher extends AppCompatActivity {
     private VersionManager versionManager;
     private MainViewModel viewModel;
+    private ActivityResultLauncher<Intent> permissionResultLauncher;
     private PermissionsHandler permissionsHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,21 +67,20 @@ public class MainLauncher extends AppCompatActivity {
         versionManager = VersionManager.get(this);
         versionManager.loadAllVersions();
 
-    }
-    private void repairNeededVersions() {
-        for (GameVersion version : versionManager.getCustomVersions()) {
-            if (version.needsRepair) {
-                VersionManager.attemptRepairLibs(this, version);
-            }
-        }
-    }
-    private void showEulaIfNeeded() {
-        SharedPreferences prefs = getSharedPreferences("LauncherPrefs", MODE_PRIVATE);
-        if (!prefs.getBoolean("eula_accepted", false)) {
-            showEulaDialog();
-        }
-    }
-    private void requestBasicPermissions() {
+        // ✅ 1. Đăng ký launcher trước
+        permissionResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (permissionsHandler != null)
+                        permissionsHandler.onActivityResult(result.getResultCode(), result.getData());
+                }
+        );
+
+        // ✅ 2. Sau đó mới gán vào PermissionsHandler
+        permissionsHandler = PermissionsHandler.getInstance();
+        permissionsHandler.setActivity(this, permissionResultLauncher);
+
+        // ✅ 3. Gọi yêu cầu quyền
         permissionsHandler.requestPermission(PermissionsHandler.PermissionType.STORAGE,
                 new PermissionsHandler.PermissionResultCallback() {
                     @Override
@@ -97,6 +99,20 @@ public class MainLauncher extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    private void repairNeededVersions() {
+        for (GameVersion version : versionManager.getCustomVersions()) {
+            if (version.needsRepair) {
+                VersionManager.attemptRepairLibs(this, version);
+            }
+        }
+    }
+    private void showEulaIfNeeded() {
+        SharedPreferences prefs = getSharedPreferences("LauncherPrefs", MODE_PRIVATE);
+        if (!prefs.getBoolean("eula_accepted", false)) {
+            showEulaDialog();
+        }
     }
     private void showEulaDialog() {
         CustomAlertDialog dia = new CustomAlertDialog(this)
