@@ -34,7 +34,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private ActivityWelcomeBinding binding;
 
-    private Boolean logined = true; // vì đang test nên cho true, nhớ đổi lại false
+    private Boolean logined = false; // vì đang test nên cho true, nhớ đổi lại false
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +105,7 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        handleDeepLink(intent);
+        handleDeepLink(intent); 
     }
 
     private void handleDeepLink(Intent intent) {

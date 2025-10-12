@@ -77,9 +77,38 @@ public class SplashActivity extends BaseActivity {
         // nhưng chưa kiểm tra index + 1 trong database đã trùng với local shared
         SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
         if (prefs.getString("username", null) != null) {
-            Intent intent = new Intent(this, MainLauncher.class);
-            startActivity(intent);
-            finish();
+            // Kiểm tra index từ database
+            db = FirebaseFirestore.getInstance();
+            db.collection("update").document("version")
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            Long remoteIndex = documentSnapshot.getLong("index");
+                            if (remoteIndex != null) {
+                                SharedPreferences dataPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
+                                long localIndex = dataPrefs.getLong("index", -1);
+
+                                // Nếu index khác nhau, xóa index local và vào DownloadData
+                                if (remoteIndex != localIndex) {
+                                    dataPrefs.edit().remove("index").apply();
+                                    Intent intent = new Intent(this, DownloadData.class);
+                                    startActivity(intent);
+                                    finish();
+                                    return;
+                                }
+                            }
+                        }
+                        // Nếu index giống nhau hoặc không có trong database, vào MainLauncher
+                        Intent intent = new Intent(this, MainLauncher.class);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        // Nếu lỗi kết nối database, vẫn cho vào MainLauncher
+                        Intent intent = new Intent(this, MainLauncher.class);
+                        startActivity(intent);
+                        finish();
+                    });
         } else {
             Intent intent = new Intent(this, WelcomeActivity.class);
             startActivity(intent);
