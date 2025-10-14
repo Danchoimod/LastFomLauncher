@@ -31,6 +31,7 @@ import org.levimc.launcher.ui.views.MainViewModelFactory;
 import org.levimc.launcher.util.ApkImportManager;
 import org.levimc.launcher.util.LanguageManager;
 import org.levimc.launcher.util.PermissionsHandler;
+import org.levimc.launcher.util.SoundPoolUtil;
 import org.levimc.launcher.util.UIHelper;
 
 public class MainLauncher extends AppCompatActivity {
@@ -53,6 +54,7 @@ public class MainLauncher extends AppCompatActivity {
         setupManagersAndHandlers();
         FeatureSettings.init(getApplicationContext());
         repairNeededVersions();
+        SoundPoolUtil.init(this);
         decorView.setSystemUiVisibility(uiOptions);
         // Lắng nghe khi người dùng vuốt hiện thanh nav/status bar
         decorView.setOnSystemUiVisibilityChangeListener(visibility -> {

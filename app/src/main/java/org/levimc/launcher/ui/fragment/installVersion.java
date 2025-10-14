@@ -36,14 +36,20 @@ public class installVersion extends Fragment {
         loadVersionsFromJson();
         setupSpinner();
         binding.localInstall.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "test main version", Toast.LENGTH_SHORT).show();
+            int position = binding.versonSpinner.getSelectedItemPosition();
+            if (position >= 0 && position < versions.size()) {
+                Version selectedVersion = versions.get(position);
+                downloadSelectedVersion(selectedVersion, "games/lflauncher/minecraft", "base.apk");
+            } else {
+                Toast.makeText(getContext(), "Vui lòng chọn phiên bản", Toast.LENGTH_SHORT).show();
+            }
         });
 
         binding.installButton.setOnClickListener(v -> {
             int position = binding.versonSpinner.getSelectedItemPosition();
             if (position >= 0 && position < versions.size()) {
                 Version selectedVersion = versions.get(position);
-                downloadSelectedVersion(selectedVersion);
+                downloadSelectedVersion(selectedVersion, "games/org.levimc/minecraft", "base.apk.levi");
             } else {
                 Toast.makeText(getContext(), "Vui lòng chọn phiên bản", Toast.LENGTH_SHORT).show();
             }
@@ -113,12 +119,12 @@ public class installVersion extends Fragment {
             }
         });
     }
-    private void downloadSelectedVersion(Version version) {
+    private void downloadSelectedVersion(Version version, String folderPath, String fileName) {
         new Thread(() -> {
             try {
                 // Tạo đường dẫn thư mục
                 File minecraftDir = new File(Environment.getExternalStorageDirectory(),
-                        "games/org.levimc/minecraft");
+                        folderPath);
                 File versionDir = new File(minecraftDir, "minecraft_" + version.getName());
 
                 // Tạo thư mục nếu chưa tồn tại
@@ -127,7 +133,7 @@ public class installVersion extends Fragment {
                 }
 
                 // File đích
-                File destinationFile = new File(versionDir, "base.apk.levi");
+                File destinationFile = new File(versionDir, fileName);
 
                 // Hiển thị progress bar trên UI thread
                 requireActivity().runOnUiThread(() -> {

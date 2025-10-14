@@ -61,31 +61,35 @@
             ></Spinner>
 
     </LinearLayout>
-    <androidx.appcompat.widget.AppCompatButton
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Install"
         android:textColor="@color/white"
-        android:textSize="12dp"
+        android:textSize="14sp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="5dp"
         android:id="@+id/installButton"
         android:fontFamily="@font/misans"
         app:layout_constraintRight_toRightOf="parent"
         android:background="#3C8527"
         app:layout_constraintBottom_toTopOf="@id/progress_bar_layout"
-        ></androidx.appcompat.widget.AppCompatButton>
-    <androidx.appcompat.widget.AppCompatButton
+        ></TextView>
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Main Version"
         android:textColor="@color/white"
-        android:textSize="12dp"
+        android:textSize="14sp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="5dp"
         android:layout_marginRight="20dp"
         android:id="@+id/localInstall"
         android:fontFamily="@font/misans"
         app:layout_constraintRight_toLeftOf="@id/installButton"
         android:background="#3C8527"
         app:layout_constraintBottom_toTopOf="@id/progress_bar_layout"
-        ></androidx.appcompat.widget.AppCompatButton>
+        ></TextView>
     <FrameLayout
         android:id="@+id/progress_bar_layout"
         android:layout_width="match_parent"

@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import org.levimc.launcher.R;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+import org.levimc.launcher.util.SoundPoolUtil;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -157,6 +158,7 @@ public class Sidebar extends Fragment {
     }
 
     private void toggleSelection(LinearLayout selectedLayout) {
+        SoundPoolUtil.play(getContext(), R.raw.press);
         for (LinearLayout layout : layouts) {
             layout.setSelected(layout == selectedLayout);
         }

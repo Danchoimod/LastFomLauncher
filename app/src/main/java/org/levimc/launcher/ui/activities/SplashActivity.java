@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.levimc.launcher.R;
+import org.levimc.launcher.util.SoundPoolUtil;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends BaseActivity {
@@ -30,7 +31,7 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
+        SoundPoolUtil.init(this);
         // ✅ Khởi tạo Firestore NGAY tại đây
         db = FirebaseFirestore.getInstance();
 
@@ -111,30 +112,88 @@ public class SplashActivity extends BaseActivity {
     }
     private void CheckDataUpdate(){
         db = FirebaseFirestore.getInstance();
+        SharedPreferences dataPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
+
+        // Kiểm tra cả version và patchnotes
         db.collection("update").document("version")
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Long remoteIndex = documentSnapshot.getLong("index");
-                        if (remoteIndex != null) {
-                            SharedPreferences dataPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
-                            long localIndex = dataPrefs.getLong("index", -1);
+                .addOnSuccessListener(versionDoc -> {
+                    db.collection("update").document("patchnotes")
+                            .get()
+                            .addOnSuccessListener(patchnotesDoc -> {
+                                boolean needUpdate = false;
 
-                            // Nếu index khác nhau, xóa index local và vào DownloadData
-                            if (remoteIndex != localIndex) {
-                                dataPrefs.edit().remove("index").apply();
-                                Intent intent = new Intent(this, DownloadData.class);
-                                startActivity(intent);
-                                finish();
-                                return;
-                            }
-                        }
-                    }
+                                // Kiểm tra version
+                                if (versionDoc.exists()) {
+                                    Long remoteVersionIndex = versionDoc.getLong("index");
+                                    if (remoteVersionIndex != null) {
+                                        long localVersionIndex = dataPrefs.getLong("versionIndex", -1);
+                                        if (remoteVersionIndex != localVersionIndex) {
+                                            needUpdate = true;
+                                        }
+                                    }
+                                }
+
+                                // Kiểm tra patchnotes
+                                if (patchnotesDoc.exists()) {
+                                    Long remotePatchnotesIndex = patchnotesDoc.getLong("index");
+                                    if (remotePatchnotesIndex != null) {
+                                        long localPatchnotesIndex = dataPrefs.getLong("patchnotesIndex", -1);
+                                        if (remotePatchnotesIndex != localPatchnotesIndex) {
+                                            needUpdate = true;
+                                        }
+                                    }
+                                }
+
+                                // Nếu có update, chuyển vào DownloadData
+                                if (needUpdate) {
+                                    Intent intent = new Intent(this, DownloadData.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    // Không có update, vào MainLauncher
+                                    SoundPoolUtil.play(this, R.raw.boot_up_2);
+                                    Intent intent = new Intent(this, MainLauncher.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                // Nếu patchnotes fail, vẫn kiểm tra version
+                                checkVersionUpdateOnly(versionDoc, dataPrefs);
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    // Nếu lỗi, vẫn vào MainLauncher
+                    SoundPoolUtil.play(this, R.raw.boot_up_2);
                     Intent intent = new Intent(this, MainLauncher.class);
                     startActivity(intent);
                     finish();
-                }).addOnFailureListener(e -> {
-                    // Xử lý lỗi nếu cần
                 });
+    }
+
+    private void checkVersionUpdateOnly(com.google.firebase.firestore.DocumentSnapshot versionDoc, SharedPreferences dataPrefs) {
+        boolean needUpdate = false;
+
+        if (versionDoc.exists()) {
+            Long remoteVersionIndex = versionDoc.getLong("index");
+            if (remoteVersionIndex != null) {
+                long localVersionIndex = dataPrefs.getLong("versionIndex", -1);
+                if (remoteVersionIndex != localVersionIndex) {
+                    needUpdate = true;
+                }
+            }
+        }
+
+        if (needUpdate) {
+            Intent intent = new Intent(this, DownloadData.class);
+            startActivity(intent);
+            finish();
+        } else {
+            SoundPoolUtil.play(this, R.raw.boot_up_2);
+            Intent intent = new Intent(this, MainLauncher.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }
