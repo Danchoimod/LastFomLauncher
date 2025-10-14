@@ -93,7 +93,7 @@ public class BedrockContainer extends Fragment {
             btnNavPlay.setOnClickListener(v -> changeFragment(1));
             btnNavInstallation.setOnClickListener(v -> changeFragment(2));
             btnNavFAQ.setOnClickListener(v -> changeFragment(3));
-            btnNavPatchNotes.setOnClickListener(v -> commingSoon());
+            btnNavPatchNotes.setOnClickListener(v -> changeFragment(4));
             btnMarketplace.setOnClickListener(v -> commingSoon());
             btnModules.setOnClickListener(v -> commingSoon());
         }
@@ -118,7 +118,7 @@ public class BedrockContainer extends Fragment {
                 showGreen(2);
                 break;
             case 4:
-                fragment = new Account_settings();
+                fragment = new patchnotes();
                 showGreen(3);
                 break;
             case 5:

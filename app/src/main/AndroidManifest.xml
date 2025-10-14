@@ -91,7 +91,8 @@ tools:ignore="MissingClass">
         android:exported="false"
         android:screenOrientation="sensorLandscape"
         tools:ignore="DiscouragedApi" />
-    <activity android:name=".ui.activities.lisense"
+    <activity
+        android:name=".ui.activities.lisense"
         android:exported="false"
         android:screenOrientation="sensorLandscape"
         tools:ignore="DiscouragedApi" />
@@ -214,4 +215,5 @@ tools:ignore="MissingClass">
 </application>
 
 </manifest>
+
 
