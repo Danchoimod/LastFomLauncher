@@ -35,6 +35,9 @@ public class installVersion extends Fragment {
         binding.progressBarLayout.setVisibility(View.INVISIBLE);
         loadVersionsFromJson();
         setupSpinner();
+        binding.localInstall.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "test main version", Toast.LENGTH_SHORT).show();
+        });
 
         binding.installButton.setOnClickListener(v -> {
             int position = binding.versonSpinner.getSelectedItemPosition();
@@ -156,7 +159,7 @@ public class installVersion extends Fragment {
                         final int progress = (int) (total * 100 / fileLength);
                         requireActivity().runOnUiThread(() -> {
                             binding.progressBar.setProgress(progress);
-                            binding.tvDownloading.setText("Đang tải " + version.getName() + "... " + progress + "%");
+                            binding.tvDownloading.setText("Downloading " + version.getName() + "... " + progress + "%");
                         });
                     }
 

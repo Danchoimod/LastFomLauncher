@@ -24,12 +24,15 @@ public class SplashActivity extends BaseActivity {
 
     ImageView imgLeaf;
     ImageView tvAppName;
-    private FirebaseFirestore db;
+    private FirebaseFirestore db; // Firestore
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        // ✅ Khởi tạo Firestore NGAY tại đây
+        db = FirebaseFirestore.getInstance();
 
         imgLeaf = findViewById(R.id.imgLeaf);
         tvAppName = findViewById(R.id.tvAppName);
@@ -38,15 +41,43 @@ public class SplashActivity extends BaseActivity {
         startLeafAnimation();
         startAppNameAnimation();
 
+        // Sau 3 giây kiểm tra login
         tvAppName.postDelayed(() -> {
-            checkLogin();
+            SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
+            String userId = prefs.getString("user_id", null);
+
+            if (userId != null) { //nếu đã nhập
+                db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Boolean isActive = documentSnapshot.getBoolean("active");
+                        if (isActive != null && !isActive) {
+                            // Chưa kích hoạt license
+                            Intent intent = new Intent(this, lisense.class);
+                            startActivity(intent);
+                            finish();
+                        }// Kiểm tra lisense thành công thì chuyển vào màn hình ở dưới
+                        else {
+                            CheckDataUpdate();
+                        }
+                    } else {
+                        Toast.makeText(this, "User data not found.", Toast.LENGTH_SHORT).show();
+                        redirectToLogin();
+                    }
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to fetch user data.", Toast.LENGTH_SHORT).show();
+                    redirectToLogin();
+                });
+            } else {
+                redirectToLogin();
+            }
         }, 3000);
-        Glide.with(this) // hoặc getApplicationContext()
+
+        // Hiển thị animation loading GIF
+        Glide.with(this)
                 .asGif()
                 .load(Uri.parse("file:///android_asset/loading.gif"))
                 .into(imgLoadingIcon);
     }
-
 
     private void startLeafAnimation() {
         TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, -600, 0);
@@ -72,47 +103,38 @@ public class SplashActivity extends BaseActivity {
         alphaAnimation.setFillAfter(true);
         tvAppName.startAnimation(alphaAnimation);
     }
-    private void checkLogin() {
-        // kiểm tra users đã authenticated chưa, nếu users có localsharedpreferences thì đã authenticated,
-        // nhưng chưa kiểm tra index + 1 trong database đã trùng với local shared
-        SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
-        if (prefs.getString("username", null) != null) {
-            // Kiểm tra index từ database
-            db = FirebaseFirestore.getInstance();
-            db.collection("update").document("version")
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            Long remoteIndex = documentSnapshot.getLong("index");
-                            if (remoteIndex != null) {
-                                SharedPreferences dataPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
-                                long localIndex = dataPrefs.getLong("index", -1);
 
-                                // Nếu index khác nhau, xóa index local và vào DownloadData
-                                if (remoteIndex != localIndex) {
-                                    dataPrefs.edit().remove("index").apply();
-                                    Intent intent = new Intent(this, DownloadData.class);
-                                    startActivity(intent);
-                                    finish();
-                                    return;
-                                }
+    private void redirectToLogin() {
+        Intent intent = new Intent(this, WelcomeActivity.class);
+        startActivity(intent);
+        finish();
+    }
+    private void CheckDataUpdate(){
+        db = FirebaseFirestore.getInstance();
+        db.collection("update").document("version")
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Long remoteIndex = documentSnapshot.getLong("index");
+                        if (remoteIndex != null) {
+                            SharedPreferences dataPrefs = getSharedPreferences("prefs", MODE_PRIVATE);
+                            long localIndex = dataPrefs.getLong("index", -1);
+
+                            // Nếu index khác nhau, xóa index local và vào DownloadData
+                            if (remoteIndex != localIndex) {
+                                dataPrefs.edit().remove("index").apply();
+                                Intent intent = new Intent(this, DownloadData.class);
+                                startActivity(intent);
+                                finish();
+                                return;
                             }
                         }
-                        // Nếu index giống nhau hoặc không có trong database, vào MainLauncher
-                        Intent intent = new Intent(this, MainLauncher.class);
-                        startActivity(intent);
-                        finish();
-                    })
-                    .addOnFailureListener(e -> {
-                        // Nếu lỗi kết nối database, vẫn cho vào MainLauncher
-                        Intent intent = new Intent(this, MainLauncher.class);
-                        startActivity(intent);
-                        finish();
-                    });
-        } else {
-            Intent intent = new Intent(this, WelcomeActivity.class);
-            startActivity(intent);
-            finish();
-        }
+                    }
+                    Intent intent = new Intent(this, MainLauncher.class);
+                    startActivity(intent);
+                    finish();
+                }).addOnFailureListener(e -> {
+                    // Xử lý lỗi nếu cần
+                });
     }
 }

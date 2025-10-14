@@ -42,9 +42,10 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
     <TextView
+        android:id="@+id/reviewlauncher"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Review the Launcher"
+        android:text="Debug the Launcher"
         android:background="@drawable/installation_boder"
         android:textColor="@color/white"
         android:textSize="12sp"

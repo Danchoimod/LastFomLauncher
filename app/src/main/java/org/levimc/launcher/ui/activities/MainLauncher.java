@@ -22,6 +22,7 @@ import org.levimc.launcher.core.minecraft.MinecraftLauncher;
 import org.levimc.launcher.core.mods.FileHandler;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.versions.VersionManager;
+import org.levimc.launcher.service.LogOverlay;
 import org.levimc.launcher.settings.FeatureSettings;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.fragment.Sidebar;
@@ -33,6 +34,9 @@ import org.levimc.launcher.util.PermissionsHandler;
 import org.levimc.launcher.util.UIHelper;
 
 public class MainLauncher extends AppCompatActivity {
+    static {
+        System.loadLibrary("leviutils");
+    }
     private VersionManager versionManager;
     private MainViewModel viewModel;
     private ActivityResultLauncher<Intent> permissionResultLauncher;
@@ -56,6 +60,7 @@ public class MainLauncher extends AppCompatActivity {
                 decorView.setSystemUiVisibility(uiOptions);
             }
         });
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new Sidebar())
@@ -108,6 +113,7 @@ public class MainLauncher extends AppCompatActivity {
             }
         }
     }
+
     private void showEulaIfNeeded() {
         SharedPreferences prefs = getSharedPreferences("LauncherPrefs", MODE_PRIVATE);
         if (!prefs.getBoolean("eula_accepted", false)) {

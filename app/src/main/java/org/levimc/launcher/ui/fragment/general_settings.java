@@ -1,7 +1,14 @@
 package org.levimc.launcher.ui.fragment;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import org.levimc.launcher.R;
+import org.levimc.launcher.settings.FeatureSettings;
+import org.levimc.launcher.ui.activities.MainActivity;
+import org.levimc.launcher.ui.dialogs.SettingsDialog;
+import org.levimc.launcher.util.GithubReleaseUpdater;
+import org.levimc.launcher.util.ThemeManager;
 
 import androidx.fragment.app.Fragment;
 
@@ -10,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +35,7 @@ public class general_settings extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private TextView reviewlauncher;
     public general_settings() {
         // Required empty public constructor
     }
@@ -63,7 +72,7 @@ public class general_settings extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_general_settings, container, false);
-
+        reviewlauncher = view.findViewById(R.id.reviewlauncher);
         Spinner languageSpinner = view.findViewById(R.id.language_spinner);
         Spinner themeSpinner = view.findViewById(R.id.theme_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -80,8 +89,35 @@ public class general_settings extends Fragment {
         );
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         themeSpinner.setAdapter(adapter2);
+        reviewlauncher.setOnClickListener(v -> {
+            // khi nhấn nút này thì mở debug log như mainActivity
+            showSettingsSafely();
+        });
 
         // Inflate the layout for this fragment
         return view;
+    }
+    private void showSettingsSafely() {
+        try {
+            showSettingsDialog();
+        } catch (PackageManager.NameNotFoundException e) {
+            //Toast.makeText(this, R.string.error_load_setting, Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void showSettingsDialog() throws PackageManager.NameNotFoundException {
+        FeatureSettings fs = FeatureSettings.getInstance();
+        SettingsDialog dlg = new SettingsDialog(requireContext());
+
+        dlg.addSwitchItem(
+                getString(R.string.enable_debug_log),
+                fs.isDebugLogDialogEnabled(),
+                (btn, check) -> fs.setDebugLogDialogEnabled(check)
+        );
+        dlg.addSwitchItem(
+                getString(R.string.version_isolation),
+                fs.isVersionIsolationEnabled(),
+                (btn, check) -> fs.setVersionIsolationEnabled(check)
+        );
+        dlg.show();
     }
 }

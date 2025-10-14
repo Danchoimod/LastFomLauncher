@@ -37,9 +37,6 @@ import android.widget.Toast;
 import java.util.List;
 
 public class Play extends Fragment {
-    static {
-        System.loadLibrary("leviutils");
-    }
     public interface PlayListener {
         void onPlayClicked();
     }
