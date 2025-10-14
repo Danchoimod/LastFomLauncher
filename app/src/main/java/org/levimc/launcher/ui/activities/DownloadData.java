@@ -258,11 +258,7 @@ public class DownloadData extends BaseActivity {
                     return;
                 }
 
-                runOnUiThread(() ->
-                        tvDownloading.setText("Downloading images... (0/" + imageCount + ")")
-                );
-
-                // Tải từng ảnh
+                int downloadedCount = 0;
                 for (int i = 0; i < imageCount; i++) {
                     JSONObject item = patchnotes.getJSONObject(i);
                     String imageUrl = item.getString("img");
@@ -276,13 +272,23 @@ public class DownloadData extends BaseActivity {
                     String fileName = id + extension;
                     File imageFile = new File(imagesDir, fileName);
 
-                    // Tải ảnh
-                    int finalI = i;
-                    runOnUiThread(() ->
-                            tvDownloading.setText("Downloading images... (" + (finalI + 1) + "/" + imageCount + ")")
-                    );
+                    // Nếu file đã tồn tại thì bỏ qua download
+                    if (imageFile.exists()) {
+                        downloadedCount++;
+                        int finalDownloaded = downloadedCount;
+                        runOnUiThread(() ->
+                                tvDownloading.setText("Downloading images... (" + finalDownloaded + "/" + imageCount + ")")
+                        );
+                        continue;
+                    }
 
+                    // Tải ảnh
                     downloadImage(imageUrl, imageFile);
+                    downloadedCount++;
+                    int finalDownloaded = downloadedCount;
+                    runOnUiThread(() ->
+                            tvDownloading.setText("Downloading images... (" + finalDownloaded + "/" + imageCount + ")")
+                    );
                 }
 
                 runOnUiThread(() -> {
