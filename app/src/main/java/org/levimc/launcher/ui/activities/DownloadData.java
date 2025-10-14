@@ -4,23 +4,29 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.levimc.launcher.R;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class DownloadData extends BaseActivity {
     private ProgressBar progressBar;
+    private TextView tvDownloading;
     private FirebaseFirestore db;
     private int pendingDownloads = 0;
+    private boolean isPatchnotesDownloaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +34,7 @@ public class DownloadData extends BaseActivity {
         setContentView(R.layout.activity_download_data);
 
         progressBar = findViewById(R.id.progress_bar);
+        tvDownloading = findViewById(R.id.tvDownloading);
         db = FirebaseFirestore.getInstance();
 
         checkAndDownloadData();
@@ -130,7 +137,7 @@ public class DownloadData extends BaseActivity {
             boolean success = false;
             try {
                 runOnUiThread(() ->
-                        Toast.makeText(this, "Downloading " + fileName + "...", Toast.LENGTH_SHORT).show()
+                        tvDownloading.setText("Downloading " + fileName + "...")
                 );
 
                 URL url = new URL(serverUrl);
@@ -162,14 +169,11 @@ public class DownloadData extends BaseActivity {
 
                         if (fileLength > 0) {
                             int progress = (int) (total * 100L / fileLength);
-                            runOnUiThread(() -> progressBar.setProgress(progress));
-
-                            if (progress == 25 || progress == 50 || progress == 75) {
-                                int finalProgress = progress;
-                                runOnUiThread(() ->
-                                        Toast.makeText(this, "Downloading " + fileName + "... " + finalProgress + "%", Toast.LENGTH_SHORT).show()
-                                );
-                            }
+                            int finalProgress = progress;
+                            runOnUiThread(() -> {
+                                progressBar.setProgress(finalProgress);
+                                tvDownloading.setText("Downloading " + fileName + "... " + finalProgress + "%");
+                            });
                         }
                     }
                     output.flush();
@@ -180,6 +184,11 @@ public class DownloadData extends BaseActivity {
 
                 prefs.edit().putLong(indexKey, remoteVersion).apply();
 
+                // Nếu là patchnotes.json thì đánh dấu để tải ảnh
+                if (fileName.equals("patchnotes.json")) {
+                    isPatchnotesDownloaded = true;
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -188,15 +197,20 @@ public class DownloadData extends BaseActivity {
             runOnUiThread(() -> {
                 if (finalSuccess) {
                     progressBar.setProgress(100);
-                    Toast.makeText(this, fileName + " downloaded successfully!", Toast.LENGTH_SHORT).show();
+                    tvDownloading.setText(fileName + " downloaded successfully!");
 
                     // Giảm số lượng download còn lại
                     pendingDownloads--;
                     if (pendingDownloads <= 0) {
-                        goToNextScreen();
+                        // Nếu patchnotes vừa tải xong, tải ảnh trước khi chuyển màn hình
+                        if (isPatchnotesDownloaded) {
+                            downloadImagesFromPatchnotes();
+                        } else {
+                            goToNextScreen();
+                        }
                     }
                 } else {
-                    Toast.makeText(this, "Failed to download " + fileName + ". Check network connection.", Toast.LENGTH_LONG).show();
+                    tvDownloading.setText("Failed to download " + fileName + ". Check network connection.");
                     progressBar.setProgress(0);
                     // Vẫn tiếp tục nếu có lỗi
                     pendingDownloads--;
@@ -208,6 +222,108 @@ public class DownloadData extends BaseActivity {
         }).start();
     }
 
+    private void downloadImagesFromPatchnotes() {
+        new Thread(() -> {
+            try {
+                // Đọc file patchnotes.json
+                File appDir = getExternalFilesDir(null);
+                File patchnotesFile = new File(appDir, "patchnotes.json");
+
+                if (!patchnotesFile.exists()) {
+                    runOnUiThread(this::goToNextScreen);
+                    return;
+                }
+
+                // Đọc nội dung file
+                FileInputStream fis = new FileInputStream(patchnotesFile);
+                byte[] buffer = new byte[(int) patchnotesFile.length()];
+                fis.read(buffer);
+                fis.close();
+                String jsonContent = new String(buffer, StandardCharsets.UTF_8);
+
+                // Parse JSON
+                JSONObject root = new JSONObject(jsonContent);
+                JSONArray patchnotes = root.getJSONArray("patchnotes");
+
+                // Tạo thư mục images
+                File imagesDir = new File(appDir, "images");
+                if (!imagesDir.exists()) {
+                    imagesDir.mkdirs();
+                }
+
+                // Đếm số ảnh cần tải
+                int imageCount = patchnotes.length();
+                if (imageCount == 0) {
+                    runOnUiThread(this::goToNextScreen);
+                    return;
+                }
+
+                runOnUiThread(() ->
+                        tvDownloading.setText("Downloading images... (0/" + imageCount + ")")
+                );
+
+                // Tải từng ảnh
+                for (int i = 0; i < imageCount; i++) {
+                    JSONObject item = patchnotes.getJSONObject(i);
+                    String imageUrl = item.getString("img");
+                    String id = item.getString("id");
+
+                    // Lấy extension từ URL
+                    String extension = ".jpg";
+                    if (imageUrl.contains(".png")) extension = ".png";
+                    else if (imageUrl.contains(".webp")) extension = ".webp";
+
+                    String fileName = id + extension;
+                    File imageFile = new File(imagesDir, fileName);
+
+                    // Tải ảnh
+                    int finalI = i;
+                    runOnUiThread(() ->
+                            tvDownloading.setText("Downloading images... (" + (finalI + 1) + "/" + imageCount + ")")
+                    );
+
+                    downloadImage(imageUrl, imageFile);
+                }
+
+                runOnUiThread(() -> {
+                    tvDownloading.setText("All images downloaded!");
+                    progressBar.setProgress(100);
+                    goToNextScreen();
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(this::goToNextScreen);
+            }
+        }).start();
+    }
+
+    private void downloadImage(String imageUrl, File targetFile) {
+        try {
+            URL url = new URL(imageUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(10000);
+            connection.setReadTimeout(10000);
+            connection.connect();
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStream input = connection.getInputStream();
+                FileOutputStream output = new FileOutputStream(targetFile);
+
+                byte[] buffer = new byte[4096];
+                int count;
+                while ((count = input.read(buffer)) != -1) {
+                    output.write(buffer, 0, count);
+                }
+
+                output.flush();
+                output.close();
+                input.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private void goToNextScreen() {

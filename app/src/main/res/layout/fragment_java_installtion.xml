@@ -60,47 +60,29 @@
         android:layout_marginStart="20dp"
         app:layout_constraintTop_toBottomOf="@id/tv_versions"
         app:layout_constraintStart_toStartOf="@id/tv_versions">
-
-        <CheckBox
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:background="@drawable/custom_checkbox_square"
-            android:button="@null"/>
         <TextView
+            android:id="@+id/tv_new_installations"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="Release"
+            android:text="New Installations"
+            android:background="@drawable/installation_boder"
             android:textColor="@color/white"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            android:padding="5dp"
+            android:layout_marginTop="10dp" />
 
-        <CheckBox
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/custom_checkbox_square"
-            android:button="@null"/>
+        <!-- Import APK button -->
         <TextView
+            android:id="@+id/import_apk_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="Modded"
+            android:text="Import APK"
+            android:background="@drawable/installation_boder"
             android:textColor="@color/white"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            android:padding="5dp"
+            android:layout_marginStart="20dp" />
 
-        <CheckBox
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/custom_checkbox_square"
-            android:button="@null"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="Beta"
-            android:textColor="@color/white"
-            android:textSize="12sp"/>
     </LinearLayout>
 
     <!-- Divider -->
@@ -121,42 +103,16 @@
         android:layout_gravity="center"
         android:visibility="gone" />
     <!-- New Installations label -->
-    <TextView
-        android:id="@+id/tv_new_installations"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Installations"
-        android:background="@drawable/installation_boder"
-        android:textColor="@color/white"
-        android:textSize="12sp"
-        android:padding="5dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/divider"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <!-- Import APK button -->
-    <TextView
-        android:id="@+id/import_apk_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Import APK"
-        android:background="@drawable/installation_boder"
-        android:textColor="@color/white"
-        android:textSize="12sp"
-        android:padding="5dp"
-        android:layout_marginStart="20dp"
-        app:layout_constraintBaseline_toBaselineOf="@id/tv_new_installations"
-        app:layout_constraintStart_toEndOf="@id/tv_new_installations"/>
 
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_installations"
         android:layout_width="0dp"
+        android:overScrollMode="never"
         android:layout_height="0dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_new_installations"
+        app:layout_constraintTop_toBottomOf="@id/divider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

@@ -118,8 +118,6 @@ public class javaInstalltion extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentJavaInstalltionBinding.inflate(inflater, container, false);
         setupManagersAndHandlers();
-        binding.tvVersions.setVisibility(View.INVISIBLE);
-        binding.llVersions.setVisibility(View.INVISIBLE);
         binding.tvNewInstallations.setOnClickListener(v -> {
             getChildFragmentManager()
                     .beginTransaction()
