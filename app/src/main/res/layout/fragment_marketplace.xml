@@ -13,52 +13,52 @@
         android:id="@+id/guideline"
         app:layout_constraintGuide_percent="0.7"
         android:orientation="vertical"
-        ></androidx.constraintlayout.widget.Guideline>
-<LinearLayout
-    android:layout_width="0dp"
-    android:background="#1F1F1F"
-    android:layout_height="match_parent"
-    android:id="@+id/left"
-    android:orientation="horizontal"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toStartOf="@id/guideline"
-    app:layout_constraintBottom_toBottomOf="parent"
-    >
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </androidx.recyclerview.widget.RecyclerView>
-</LinearLayout>
+        />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:background="#1F1F1F"
+        android:layout_height="match_parent"
+        android:id="@+id/left"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            tools:listitem="@layout/item_marketplace" />
+    </LinearLayout>
 
     <ScrollView
+        android:id="@+id/rightSidebar"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:background="#1F1F1F"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/lfCoinFooter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/guideline">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
-            android:layout_height="match_parent">
-            <androidx.constraintlayout.widget.Guideline
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/guideline2"
-                app:layout_constraintGuide_percent="0.5"
-                android:orientation="horizontal"
-                ></androidx.constraintlayout.widget.Guideline>
+            android:paddingHorizontal="12dp"
+            android:layout_height="wrap_content">
+
             <TextView
                 android:id="@+id/searchText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Search Name"
-                android:textColor="@color/white"></TextView>
+                android:textColor="@color/white"/>
             <EditText
+                android:id="@+id/searchEditText"
                 android:singleLine="true"
                 android:textSize="12dp"
                 android:paddingVertical="8sp"
@@ -66,19 +66,87 @@
                 android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:background="@drawable/spinner_item_bg"
-                ></EditText>
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                />
             <TextView
                 android:id="@+id/packType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Pack Type"
-                android:textColor="@color/white"></TextView>
+                android:textColor="@color/white"/>
             <Spinner
                 android:background="@drawable/spinner_item_bg"
                 android:id="@+id/pack_spinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"></Spinner>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/lfCoinFooter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#1F1F1F"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="12dp"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/textLFCoin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LFC:"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#000000" android:gravity="center_vertical"
+            android:paddingVertical="4dp"
+            android:paddingHorizontal="8dp">
+
+            <ImageView
+                android:id="@+id/iconLFCoin2"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/coin"
+                app:tint="#FFD700" /> <TextView
+            android:id="@+id/lfCoinAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:layout_marginStart="8dp"
+            tools:text="100" />
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/addLfCoinText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:layout_marginStart="12dp"
+            android:padding="4dp"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Add LFCoin"/>
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

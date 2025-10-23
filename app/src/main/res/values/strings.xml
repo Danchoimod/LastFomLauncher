@@ -212,11 +212,11 @@
     </array>
 
     <array name="pack_type_spinenr">
-        <item>Resource Pack</item>
-        <item>Behavior Pack</item>
+        <item>All</item>
         <item>Addon</item>
-        <item>Mods</item>
+        <item>Texture</item>
         <item>Skins</item>
+        <item>map</item>
     </array>
     <!--    Phần này là phần fag-->
     <string name="q1">What is the Minecraft Launcher?</string>
