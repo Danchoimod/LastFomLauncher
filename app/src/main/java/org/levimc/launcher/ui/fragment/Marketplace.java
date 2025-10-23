@@ -95,6 +95,7 @@ public class Marketplace extends Fragment {
             // Open detail page
             Intent i = new Intent(requireContext(), org.levimc.launcher.ui.activities.MarketplaceDetailActivity.class);
             i.putExtra("id", item.id);
+            if (item.packId != null) i.putExtra("packid", item.packId);
             i.putExtra("name", item.name);
             i.putExtra("description", item.description);
             i.putExtra("imageUrl", item.imageUrl);

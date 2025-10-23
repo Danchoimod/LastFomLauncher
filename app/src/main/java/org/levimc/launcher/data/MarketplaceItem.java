@@ -10,6 +10,7 @@ public class MarketplaceItem {
     public String owner;
     public String ownerUrl;
     public Double price; // store as double to accept Firestore number
+    public Integer packId; // numeric backend id for ownership/purchase
     public String type;
     public String url;
     public String createdAt; // ISO8601 string
@@ -31,11 +32,23 @@ public class MarketplaceItem {
             cover = doc.getString("img");
         }
         // If your Firestore uses a fixed key, replace the above with the exact key and remove fallbacks.
-        item.imageUrl = cover;
+        // Normalize localhost dev URLs to production to avoid Glide failing on device
+        if (cover != null) {
+            String c = cover;
+            c = c.replace("http://localhost:3000", "https://lflauncher.vercel.app");
+            c = c.replace("https://localhost:3000", "https://lflauncher.vercel.app");
+            c = c.replace("http://127.0.0.1:3000", "https://lflauncher.vercel.app");
+            c = c.replace("http://10.0.2.2:3000", "https://lflauncher.vercel.app");
+            item.imageUrl = c;
+        } else {
+            item.imageUrl = null;
+        }
         item.owner = doc.getString("owner");
         item.ownerUrl = doc.getString("ownerurl");
         Number p = (Number) doc.get("price");
         item.price = p == null ? null : p.doubleValue();
+        Number pid = (Number) doc.get("packid");
+        item.packId = pid == null ? null : pid.intValue();
         item.type = doc.getString("type");
         item.url = doc.getString("url");
         item.createdAt = doc.getString("createdAt");

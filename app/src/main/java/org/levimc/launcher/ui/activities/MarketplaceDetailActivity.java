@@ -33,6 +33,7 @@ public class MarketplaceDetailActivity extends AppCompatActivity {
 
     private String id, name, description, imageUrl, owner, ownerUrl, type, url;
     private double price;
+    private Integer packId;
 
     private ImageView cover;
     private TextView title, typeChip, author, count, priceView, balanceView, descView;
@@ -54,7 +55,9 @@ public class MarketplaceDetailActivity extends AppCompatActivity {
         ownerUrl = getIntent().getStringExtra("ownerUrl");
         type = getIntent().getStringExtra("type");
         url = getIntent().getStringExtra("url");
-        price = getIntent().getDoubleExtra("price", -1);
+    price = getIntent().getDoubleExtra("price", -1);
+    if (getIntent().hasExtra("packid")) packId = getIntent().getIntExtra("packid", -1);
+    if (packId != null && packId < 0) packId = null;
 
         cover = findViewById(R.id.coverImage);
         title = findViewById(R.id.detailTitle);
@@ -108,36 +111,39 @@ public class MarketplaceDetailActivity extends AppCompatActivity {
 
     private void refreshOwnedAndBalance() {
         setLoading(true);
-        ApiClient.getOwnedAsync(this, (ownedIds, balance, error) -> {
+        // Prefer a direct ownership check when possible
+        ApiClient.checkOwnedAsync(this, id, packId, (owned, balance, error) -> {
             mainHandler.post(() -> {
                 setLoading(false);
-                if (error != null) {
-                    // Silent; user may be logged out
-                }
-                if (ownedIds != null) {
-                    isOwned = isOwned(ownedIds);
+                if (owned != null) {
+                    isOwned = owned;
                     primaryBtn.setText(isOwned ? R.string.download_now : R.string.buy_now);
                 }
-                if (balance != null) {
-                    balanceView.setText(getString(R.string.current_balance_format, balance));
-                }
+                if (balance != null) balanceView.setText(getString(R.string.current_balance_format, balance));
             });
         });
     }
 
-    private boolean isOwned(Set<String> ownedIds) {
-        if (ownedIds == null) return false;
-        if (id != null && ownedIds.contains(id)) return true;
-        // Also consider numeric id fallback (if backend uses packid). Not available here.
-        return false;
-    }
+    // legacy support kept via ApiClient.checkOwnedAsync fallback
 
     private void doPurchase() {
+        android.util.Log.d("MarketplaceDetail", "=== PURCHASE BUTTON CLICKED ===");
+        android.util.Log.d("MarketplaceDetail", "Item ID: " + id);
+        android.util.Log.d("MarketplaceDetail", "Pack ID: " + packId);
+        android.util.Log.d("MarketplaceDetail", "Price: " + price);
+        
         setLoading(true);
-        ApiClient.purchaseAsync(this, id, (success, message, newBalance, error) -> {
+        ApiClient.purchaseAsync(this, id, packId, (success, message, newBalance, error) -> {
             mainHandler.post(() -> {
+                android.util.Log.d("MarketplaceDetail", "Purchase callback received");
+                android.util.Log.d("MarketplaceDetail", "Success: " + success);
+                android.util.Log.d("MarketplaceDetail", "Message: " + message);
+                android.util.Log.d("MarketplaceDetail", "New balance: " + newBalance);
+                android.util.Log.d("MarketplaceDetail", "Error: " + (error != null ? error.getMessage() : "null"));
+                
                 setLoading(false);
                 if (success) {
+                    android.util.Log.i("MarketplaceDetail", "Purchase SUCCESS!");
                     Toast.makeText(this, R.string.purchase_success, Toast.LENGTH_SHORT).show();
                     isOwned = true;
                     primaryBtn.setText(R.string.download_now);
@@ -149,11 +155,14 @@ public class MarketplaceDetailActivity extends AppCompatActivity {
                         fetchUserCoinFromFirestore();
                     }
                 } else {
+                    android.util.Log.e("MarketplaceDetail", "Purchase FAILED!");
                     String msg = message;
                     if (error != null) msg = error.getMessage();
                     if (msg == null || msg.isEmpty()) msg = getString(R.string.purchase_failed);
+                    android.util.Log.e("MarketplaceDetail", "Error message shown to user: " + msg);
                     Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
                 }
+                android.util.Log.d("MarketplaceDetail", "=== PURCHASE FLOW COMPLETE ===");
             });
         });
     }
