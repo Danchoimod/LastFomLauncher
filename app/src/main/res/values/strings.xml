@@ -218,6 +218,16 @@
         <item>Skins</item>
         <item>map</item>
     </array>
+    
+    <!-- Marketplace detail -->
+    <string name="purchase_success">Mua thành công</string>
+    <string name="purchase_failed">Mua thất bại</string>
+    <string name="download_now">DOWNLOAD</string>
+    <string name="buy_now">BUY NOW</string>
+    <string name="current_balance_format">Current balance: %1$d Coins</string>
+    <string name="no_description">No description</string>
+    <string name="no_download_link">No download link</string>
+    <string name="free_label">Free</string>
     <!--    Phần này là phần fag-->
     <string name="q1">What is the Minecraft Launcher?</string>
     <string name="a1">The Minecraft Launcher is the portal into the world of Minecraft. The Launcher can not only help you install and play Minecraft games, but you can also go to the Launcher to learn about important Minecraft news and events. Previously, only including Minecraft: Java Edition and Minecraft Dungeons, the Launcher now also includes Minecraft: Bedrock Edition, making this the next big step in the Launcher team’s quest to create a unified experience for all Minecraft players! Read more about the Launcher at https://aka.ms/NewMinecraftLauncherFAQ</string>

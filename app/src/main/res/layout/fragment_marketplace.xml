@@ -58,6 +58,8 @@
                 android:text="Search Name"
                 android:textColor="@color/white"/>
             <EditText
+                android:hint="Search..."
+                android:textColorHint="@color/gray"
                 android:id="@+id/searchEditText"
                 android:singleLine="true"
                 android:textSize="12dp"
@@ -101,7 +103,7 @@
             android:id="@+id/textLFCoin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LFC:"
+            android:text="LFCOIN:"
             android:textColor="@android:color/white"
             android:textSize="12sp"
             />

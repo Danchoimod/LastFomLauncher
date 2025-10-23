@@ -1,6 +1,7 @@
 package org.levimc.launcher.ui.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -91,10 +92,18 @@ public class Marketplace extends Fragment {
         // RecyclerView setup
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new MarketplaceAdapter(item -> {
-            if (item.url != null) {
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(item.url));
-                startActivity(i);
-            }
+            // Open detail page
+            Intent i = new Intent(requireContext(), org.levimc.launcher.ui.activities.MarketplaceDetailActivity.class);
+            i.putExtra("id", item.id);
+            i.putExtra("name", item.name);
+            i.putExtra("description", item.description);
+            i.putExtra("imageUrl", item.imageUrl);
+            i.putExtra("owner", item.owner);
+            i.putExtra("ownerUrl", item.ownerUrl);
+            i.putExtra("price", item.price == null ? -1 : item.price);
+            i.putExtra("type", item.type);
+            i.putExtra("url", item.url);
+            startActivity(i);
         });
         binding.recyclerView.setAdapter(adapter);
 
@@ -137,8 +146,17 @@ public class Marketplace extends Fragment {
 
         // Initial load
         resetAndLoad();
+        // Fetch user coin for the footer
+        fetchUserCoinFromFirestore();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh coin when returning from detail/purchase screens
+        fetchUserCoinFromFirestore();
     }
 
     private void resetAndLoad() {
@@ -204,5 +222,22 @@ public class Marketplace extends Fragment {
         // Your Firestore stores textures as "texture pack"
         if (v.contains("texture") || v.contains("resource")) return "texture pack";
         return v; // fallback: use as-is
+    }
+
+    private void fetchUserCoinFromFirestore() {
+        if (!isAdded()) return;
+        SharedPreferences prefs = requireContext().getSharedPreferences("user_info", android.content.Context.MODE_PRIVATE);
+        String userId = prefs.getString("user_id", null);
+        if (userId == null || userId.isEmpty()) return;
+        db.collection("users").document(userId).get()
+                .addOnSuccessListener(snapshot -> {
+                    if (!isAdded()) return;
+                    Number coin = (Number) snapshot.get("coin");
+                    String text = coin == null ? "0" : String.valueOf(coin.intValue());
+                    binding.lfCoinAmount.setText(text);
+                })
+                .addOnFailureListener(e -> {
+                    // ignore silently
+                });
     }
 }
