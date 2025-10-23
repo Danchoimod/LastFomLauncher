@@ -1,8 +1,6 @@
 package org.levimc.launcher.ui.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +8,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.ui.entity.PatchNoteItem;
+import org.levimc.launcher.ui.fragment.webview;
 
 import java.io.File;
 import java.util.List;
@@ -73,11 +73,18 @@ public class PatchNotesAdapter extends RecyclerView.Adapter<PatchNotesAdapter.Vi
                     .into(holder.imgPatchNote);
         }
 
-        // Xử lý click để mở URL
+        // Xử lý click để mở fragment webview
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(item.getUrl()));
-            context.startActivity(intent);
+            if (context instanceof FragmentActivity) {
+                FragmentActivity activity = (FragmentActivity) context;
+                webview webViewFragment = webview.newInstance(item.getUrl());
+
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.patchNoteContent, webViewFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
         });
     }
 
@@ -97,4 +104,3 @@ public class PatchNotesAdapter extends RecyclerView.Adapter<PatchNotesAdapter.Vi
         }
     }
 }
-

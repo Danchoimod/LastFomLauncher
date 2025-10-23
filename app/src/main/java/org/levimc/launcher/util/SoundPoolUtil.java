@@ -35,6 +35,8 @@ public class SoundPoolUtil {
         // 🟢 Load âm thanh (bạn có thể thêm nhiều hơn)
         soundMap.put(R.raw.press, soundPool.load(context, R.raw.press, 1));
         soundMap.put(R.raw.boot_up_2, soundPool.load(context, R.raw.boot_up_2, 2));
+        soundMap.put(R.raw.boot_up, soundPool.load(context, R.raw.boot_up, 3));
+        soundMap.put(R.raw.scroll, soundPool.load(context, R.raw.scroll, 4));
 
         // Callback khi load xong
         soundPool.setOnLoadCompleteListener((sp, sampleId, status) -> {

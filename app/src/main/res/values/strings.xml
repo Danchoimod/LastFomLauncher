@@ -210,6 +210,14 @@
     <array name="theme_spinner_array">
         <item>Lastest Update</item>
     </array>
+
+    <array name="pack_type_spinenr">
+        <item>Resource Pack</item>
+        <item>Behavior Pack</item>
+        <item>Addon</item>
+        <item>Mods</item>
+        <item>Skins</item>
+    </array>
     <!--    Phần này là phần fag-->
     <string name="q1">What is the Minecraft Launcher?</string>
     <string name="a1">The Minecraft Launcher is the portal into the world of Minecraft. The Launcher can not only help you install and play Minecraft games, but you can also go to the Launcher to learn about important Minecraft news and events. Previously, only including Minecraft: Java Edition and Minecraft Dungeons, the Launcher now also includes Minecraft: Bedrock Edition, making this the next big step in the Launcher team’s quest to create a unified experience for all Minecraft players! Read more about the Launcher at https://aka.ms/NewMinecraftLauncherFAQ</string>

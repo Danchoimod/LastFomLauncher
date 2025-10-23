@@ -102,10 +102,8 @@ public class Play extends Fragment {
     private void launchGame() {
         binding.launchButton.setEnabled(false);
         binding.progressLoader.setVisibility(View.VISIBLE);
-
         GameVersion version = versionManager != null ? versionManager.getSelectedVersion() : null;
         minecraftLauncher.launch(requireActivity().getIntent(), version);
-
         requireActivity().runOnUiThread(() -> {
             if (binding != null) {
                 binding.progressLoader.setVisibility(View.GONE);

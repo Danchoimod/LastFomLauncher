@@ -1,5 +1,6 @@
 package org.levimc.launcher.ui.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import org.levimc.launcher.ui.fragment.Sidebar;
 import org.levimc.launcher.ui.views.MainViewModel;
 import org.levimc.launcher.ui.views.MainViewModelFactory;
 import org.levimc.launcher.util.ApkImportManager;
+import org.levimc.launcher.util.ComingSoonUtil;
 import org.levimc.launcher.util.LanguageManager;
 import org.levimc.launcher.util.PermissionsHandler;
 import org.levimc.launcher.util.SoundPoolUtil;
@@ -134,4 +136,19 @@ public class MainLauncher extends AppCompatActivity {
         dia.setCancelable(false);
         dia.show();
     }
+    @Override
+    @SuppressLint("MissingSuperCall")
+    public void onBackPressed() {
+        SoundPoolUtil.play(this, R.raw.boot_up);
+
+        new CustomAlertDialog(this)
+                .setTitleText("Do you want to exit?")
+                .setMessage("Are you sure you want to exit the launcher?")
+                .setPositiveButton("OK", dialog -> {
+                    finish(); // Đóng Activity
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
 }

@@ -54,6 +54,19 @@ public class UltimateVersionAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
+    // Allow updating data after construction
+    public void updateData(List<BigGroup> bigGroups) {
+        flatItems.clear();
+        for (BigGroup group : bigGroups) {
+            flatItems.add(group.groupTitleResId);
+            for (VersionGroup vg : group.versionGroups) {
+                flatItems.add(vg.versionCode);
+                flatItems.addAll(vg.versions);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemViewType(int position) {
         Object item = flatItems.get(position);
@@ -136,7 +149,9 @@ public class UltimateVersionAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 if (listener != null) listener.onVersionSelected(v);
             });
 
-            if (!v.isInstalled && longClickListener != null) {
+            // Allow long-press for custom versions (not installed) and for local downloaded APK entries (versionCode == "local")
+            boolean allowLongClick = longClickListener != null && (!v.isInstalled || "local".equals(v.versionCode));
+            if (allowLongClick) {
                 parentLayout.setOnLongClickListener(_v -> {
                     longClickListener.onVersionLongClicked(v);
                     return true;
