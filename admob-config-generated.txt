@@ -1,0 +1,29 @@
+# AdMob SSV Configuration (Generated: 2025-10-28 05:22:35)
+
+[ADMOB_CONFIG]
+REWARDED_AD_UNIT_ID=
+VERCEL_API_URL=/api/verify-reward
+
+[REWARD_CONFIG]
+COINS_PER_AD=10
+MAX_ADS_PER_DAY=10
+DAILY_REWARD_COINS=3
+
+[STATUS]
+[x] Step 1: Collected Ad Unit ID
+[x] Step 2: Updated getCoin.java
+[ ] Step 3: Configure SSV URL in AdMob Console (MANUAL STEP REQUIRED)
+[ ] Step 4: Verify FIREBASE_SERVICE_ACCOUNT in Vercel (MANUAL STEP REQUIRED)
+[ ] Step 5: Test API endpoint
+[ ] Step 6: Build and test app
+
+[NEXT_STEPS]
+1. Go to AdMob Console: https://apps.admob.com
+2. Settings → Account → Apps → Select your app
+3. Configure Server-Side Verification URL: /api/verify-reward
+4. Go to Vercel Dashboard: https://vercel.com
+5. Check Environment Variables → FIREBASE_SERVICE_ACCOUNT is set
+6. Run test script: .\test-admob-api.ps1 -VercelUrl ""
+7. Build app: .\gradlew assembleDebug
+8. Test ads in app and verify coins are added
+

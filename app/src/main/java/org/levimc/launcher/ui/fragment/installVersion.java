@@ -1,5 +1,11 @@
 package org.levimc.launcher.ui.fragment;
 
+import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import android.os.Environment;
 import java.io.File;
@@ -16,46 +27,146 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.levimc.launcher.R;
 import org.levimc.launcher.databinding.FragmentInstallVersionBinding;
 import org.levimc.launcher.ui.entity.Version;
 
 import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class installVersion extends Fragment {
 
+    private static final String CHANNEL_ID = "levi_downloads";
+    private static final int REQ_POST_NOTIFICATIONS = 1001;
+
     private FragmentInstallVersionBinding binding;
     private List<Version> versions = new ArrayList<>();
+    // Toggle state: true => Main Version mode (no [LF]), false => Install mode (with [LF])
+    private boolean isMainMode = true; // default true when fragment opens
+    // Data shown in spinner after filtering
+    private final List<Version> displayedVersions = new ArrayList<>();
+    private ArrayAdapter<String> spinnerAdapter;
+
+    // Hold pending download request while asking permission
+    private static class PendingDownload {
+        final Version version; final String folderPath; final String fileName;
+        PendingDownload(Version v, String f, String n) { this.version = v; this.folderPath = f; this.fileName = n; }
+    }
+    private PendingDownload pending;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentInstallVersionBinding.inflate(getLayoutInflater(), container, false);
         View root = binding.getRoot();
-        binding.progressBarLayout.setVisibility(View.INVISIBLE);
+        if (binding.progressBarLayout != null) {
+            binding.progressBarLayout.setVisibility(View.INVISIBLE);
+        }
+
+        createNotificationChannelIfNeeded();
+
+        // Load full list once
         loadVersionsFromJson();
+        // Prepare spinner adapter and listener
         setupSpinner();
+
+        // Default mode = true (MainVersion). Apply UI and data.
+        isMainMode = true;
+        updateUiForMode();
+
+        // Toggle mode when tapping icon
+        binding.icon.setOnClickListener(v -> {
+            isMainMode = !isMainMode;
+            updateUiForMode();
+        });
+
+        // Local (Main Version) install
         binding.localInstall.setOnClickListener(v -> {
+            if (!binding.localInstall.isEnabled()) return;
             int position = binding.versonSpinner.getSelectedItemPosition();
-            if (position >= 0 && position < versions.size()) {
-                Version selectedVersion = versions.get(position);
-                downloadSelectedVersion(selectedVersion, "games/lflauncher/minecraft", "base.apk");
+            if (position >= 0 && position < displayedVersions.size()) {
+                Version selectedVersion = displayedVersions.get(position);
+                startDownloadFlow(selectedVersion, "games/lflauncher/minecraft", "base.apk");
             } else {
                 Toast.makeText(getContext(), "Vui lòng chọn phiên bản", Toast.LENGTH_SHORT).show();
             }
         });
 
+        // Cloud (Install) action
         binding.installButton.setOnClickListener(v -> {
+            if (!binding.installButton.isEnabled()) return;
             int position = binding.versonSpinner.getSelectedItemPosition();
-            if (position >= 0 && position < versions.size()) {
-                Version selectedVersion = versions.get(position);
-                downloadSelectedVersion(selectedVersion, "games/org.levimc/minecraft", "base.apk.levi");
+            if (position >= 0 && position < displayedVersions.size()) {
+                Version selectedVersion = displayedVersions.get(position);
+                startDownloadFlow(selectedVersion, "games/org.levimc/minecraft", "base.apk.levi");
             } else {
                 Toast.makeText(getContext(), "Vui lòng chọn phiên bản", Toast.LENGTH_SHORT).show();
             }
         });
 
         return root;
+    }
+
+    private void createNotificationChannelIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Context ctx = requireContext();
+            NotificationManager nm = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm != null && nm.getNotificationChannel(CHANNEL_ID) == null) {
+                NotificationChannel channel = new NotificationChannel(
+                        CHANNEL_ID,
+                        "Levi Downloads",
+                        NotificationManager.IMPORTANCE_LOW
+                );
+                channel.setDescription("Tiến trình tải phiên bản");
+                nm.createNotificationChannel(channel);
+            }
+        }
+    }
+
+    private boolean ensureNotificationPermission() {
+        if (Build.VERSION.SDK_INT < 33) return true;
+        Context ctx = requireContext();
+        int granted = ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS);
+        if (granted == PackageManager.PERMISSION_GRANTED) return true;
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_POST_NOTIFICATIONS);
+        return false;
+    }
+
+    private void startDownloadFlow(Version version, String folderPath, String fileName) {
+        // Ask notification permission first (Android 13+)
+        if (!ensureNotificationPermission()) {
+            // Store pending and wait for callback
+            pending = new PendingDownload(version, folderPath, fileName);
+            // Show light UI indicator if available
+            if (binding != null && binding.progressBarLayout != null) {
+                binding.progressBarLayout.setVisibility(View.VISIBLE);
+            }
+            return;
+        }
+        // Permission already ok -> start download now
+        downloadSelectedVersion(version, folderPath, fileName);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQ_POST_NOTIFICATIONS) {
+            boolean granted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            if (granted && pending != null) {
+                PendingDownload p = pending; pending = null;
+                downloadSelectedVersion(p.version, p.folderPath, p.fileName);
+            } else {
+                if (binding != null && binding.progressBarLayout != null) {
+                    binding.progressBarLayout.setVisibility(View.INVISIBLE);
+                }
+                Toast.makeText(requireContext(), "Không có quyền thông báo. Vẫn tiến hành tải trong ứng dụng.", Toast.LENGTH_SHORT).show();
+                if (pending != null) {
+                    PendingDownload p = pending; pending = null;
+                    downloadSelectedVersion(p.version, p.folderPath, p.fileName);
+                }
+            }
+        }
     }
 
     private void loadVersionsFromJson() {
@@ -68,23 +179,26 @@ public class installVersion extends Fragment {
                 return;
             }
 
-            FileInputStream fis = new FileInputStream(versionsFile);
-            byte[] data = new byte[(int) versionsFile.length()];
-            fis.read(data);
-            fis.close();
+            try (FileInputStream fis = new FileInputStream(versionsFile)) {
+                byte[] data = new byte[(int) versionsFile.length()];
+                int read = fis.read(data);
+                if (read <= 0) {
+                    Toast.makeText(getContext(), "versions.json rỗng", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String jsonString = new String(data, StandardCharsets.UTF_8);
+                JSONObject jsonObject = new JSONObject(jsonString);
+                JSONArray versionsArray = jsonObject.getJSONArray("versions");
 
-            String jsonString = new String(data, "UTF-8");
-            JSONObject jsonObject = new JSONObject(jsonString);
-            JSONArray versionsArray = jsonObject.getJSONArray("versions");
+                versions.clear();
+                for (int i = 0; i < versionsArray.length(); i++) {
+                    JSONObject versionObj = versionsArray.getJSONObject(i);
+                    String id = versionObj.getString("id");
+                    String name = versionObj.getString("name");
+                    String url = versionObj.getString("url");
 
-            versions.clear();
-            for (int i = 0; i < versionsArray.length(); i++) {
-                JSONObject versionObj = versionsArray.getJSONObject(i);
-                String id = versionObj.getString("id");
-                String name = versionObj.getString("name");
-                String url = versionObj.getString("url");
-
-                versions.add(new Version(id, name, url));
+                    versions.add(new Version(id, name, url));
+                }
             }
 
         } catch (Exception e) {
@@ -94,102 +208,194 @@ public class installVersion extends Fragment {
     }
 
     private void setupSpinner() {
-        List<String> versionNames = new ArrayList<>();
-        for (Version v : versions) {
-            versionNames.add(v.getName());
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+        // Create empty adapter once
+        spinnerAdapter = new ArrayAdapter<>(
                 requireContext(),
                 org.levimc.launcher.R.layout.spinner_item,
-                versionNames
+                new ArrayList<>()
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.versonSpinner.setAdapter(adapter);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.versonSpinner.setAdapter(spinnerAdapter);
 
         binding.versonSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                Version selectedVersion = versions.get(position);
-//                Toast.makeText(getContext(), selectedVersion.getName(), Toast.LENGTH_SHORT).show();
+                // No-op
             }
 
             @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {
-            }
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
     }
+
+    private void refreshSpinnerData() {
+        displayedVersions.clear();
+        List<String> names = new ArrayList<>();
+        for (Version v : versions) {
+            String name = v.getName();
+            boolean hasLf = name != null && name.contains("[LF]");
+            if (isMainMode) {
+                if (!hasLf) { displayedVersions.add(v); names.add(name); }
+            } else {
+                if (hasLf) { displayedVersions.add(v); names.add(name); }
+            }
+        }
+        spinnerAdapter.clear();
+        spinnerAdapter.addAll(names);
+        spinnerAdapter.notifyDataSetChanged();
+        if (!displayedVersions.isEmpty()) {
+            binding.versonSpinner.setSelection(0);
+        }
+    }
+
+    private void updateUiForMode() {
+        try {
+            int resId = getResources().getIdentifier(isMainMode ? "grassblock" : "java", "drawable", requireContext().getPackageName());
+            if (resId != 0) {
+                binding.icon.setImageResource(resId);
+            }
+        } catch (Exception ignored) {}
+
+        // Update buttons enablement
+        applyEnabled(binding.localInstall, isMainMode); // MainVersion button
+        applyEnabled(binding.installButton, !isMainMode); // Install button
+
+        // Update description text in English based on mode
+        if (binding != null && binding.description != null) {
+            String desc = isMainMode
+                    ? "This download installs the APK version."
+                    : "This feature downloads the loader version.";
+            binding.description.setText(desc);
+        }
+
+        // Refresh spinner to match current mode
+        refreshSpinnerData();
+    }
+
+    private void applyEnabled(View v, boolean enabled) {
+        v.setEnabled(enabled);
+        v.setClickable(enabled);
+        v.setAlpha(enabled ? 1f : 0.5f);
+    }
+
     private void downloadSelectedVersion(Version version, String folderPath, String fileName) {
         new Thread(() -> {
-            try {
-                // Tạo đường dẫn thư mục
-                File minecraftDir = new File(Environment.getExternalStorageDirectory(),
-                        folderPath);
-                File versionDir = new File(minecraftDir, "minecraft_" + version.getName());
+            int notificationId = (int) (System.currentTimeMillis() & 0xFFFFFF);
+            NotificationManagerCompat nmc = NotificationManagerCompat.from(requireContext());
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), CHANNEL_ID)
+                    .setSmallIcon(android.R.drawable.stat_sys_download)
+                    .setContentTitle("Downloading: " + version.getName())
+                    .setContentText("Đang chuẩn bị...")
+                    .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+                    .setOngoing(true)
+                    .setOnlyAlertOnce(true)
+                    .setPriority(NotificationCompat.PRIORITY_LOW);
 
-                // Tạo thư mục nếu chưa tồn tại
-                if (!versionDir.exists()) {
+            try { nmc.notify(notificationId, builder.build()); } catch (SecurityException ignore) {}
+
+            HttpURLConnection connection = null;
+            try {
+                File minecraftDir = new File(Environment.getExternalStorageDirectory(), folderPath);
+                File versionDir = new File(minecraftDir, "minecraft_" + version.getName());
+                if (!versionDir.exists()) { //noinspection ResultOfMethodCallIgnored
                     versionDir.mkdirs();
                 }
-
-                // File đích
                 File destinationFile = new File(versionDir, fileName);
 
-                // Hiển thị progress bar trên UI thread
-                requireActivity().runOnUiThread(() -> {
-                    binding.progressBarLayout.setVisibility(View.VISIBLE);
-                    binding.progressBar.setProgress(0);
-                    binding.tvDownloading.setText("Downloading... " + version.getName() + "...");
+                runOnUiThreadSafe(() -> {
+                    if (binding != null && binding.progressBarLayout != null) {
+                        binding.progressBarLayout.setVisibility(View.VISIBLE);
+                        binding.progressBar.setIndeterminate(false);
+                        binding.progressBar.setProgress(0);
+                        binding.tvDownloading.setText("Downloading... " + version.getName() + "...");
+                    }
                 });
 
-                // Tải file từ URL
                 URL url = new URL(version.getUrl());
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
 
                 int fileLength = connection.getContentLength();
+                final boolean unknownLength = fileLength <= 0;
 
-                // Download file
-                InputStream input = connection.getInputStream();
-                FileOutputStream output = new FileOutputStream(destinationFile);
-
-                byte[] buffer = new byte[4096];
-                long total = 0;
-                int count;
-
-                while ((count = input.read(buffer)) != -1) {
-                    total += count;
-
-                    // Cập nhật progress
-                    if (fileLength > 0) {
-                        final int progress = (int) (total * 100 / fileLength);
-                        requireActivity().runOnUiThread(() -> {
-                            binding.progressBar.setProgress(progress);
-                            binding.tvDownloading.setText("Downloading " + version.getName() + "... " + progress + "%");
-                        });
-                    }
-
-                    output.write(buffer, 0, count);
+                if (unknownLength) {
+                    builder.setProgress(0, 0, true).setContentText("Đang tải...");
+                    try { nmc.notify(notificationId, builder.build()); } catch (SecurityException ignore) {}
+                    runOnUiThreadSafe(() -> { if (binding != null) binding.progressBar.setIndeterminate(true); });
                 }
 
-                output.flush();
-                output.close();
-                input.close();
+                try (InputStream input = connection.getInputStream(); FileOutputStream output = new FileOutputStream(destinationFile)) {
+                    byte[] buffer = new byte[8192];
+                    long total = 0;
+                    int count;
+                    while ((count = input.read(buffer)) != -1) {
+                        total += count;
+                        if (!unknownLength) {
+                            final int progress = (int) (total * 100 / fileLength);
+                            builder.setProgress(100, progress, false).setContentText(progress + "%");
+                            try { nmc.notify(notificationId, builder.build()); } catch (SecurityException ignore) {}
+                            final int p = progress;
+                            runOnUiThreadSafe(() -> {
+                                if (binding != null) {
+                                    binding.progressBar.setIndeterminate(false);
+                                    binding.progressBar.setProgress(p);
+                                    binding.tvDownloading.setText("Downloading " + version.getName() + "... " + p + "%");
+                                }
+                            });
+                        }
+                        output.write(buffer, 0, count);
+                    }
+                    output.flush();
+                }
 
-                // Hoàn thành
-                requireActivity().runOnUiThread(() -> {
-                    binding.progressBarLayout.setVisibility(View.INVISIBLE);
-                    Toast.makeText(getContext(), "Tải thành công: " + version.getName(), Toast.LENGTH_SHORT).show();
+                // Update the same notification to success state (more reliable in background)
+                builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
+                        .setCategory(NotificationCompat.CATEGORY_STATUS)
+                        .setContentTitle("Download success")
+                        .setContentText("Đã tải xong: " + version.getName())
+                        .setOngoing(false)
+                        .setOnlyAlertOnce(false)
+                        .setAutoCancel(true)
+                        .setProgress(0,0,false);
+                try { nmc.notify(notificationId, builder.build()); } catch (SecurityException ignore) {}
+
+                runOnUiThreadSafe(() -> {
+                    if (binding != null && binding.progressBarLayout != null) {
+                        binding.progressBarLayout.setVisibility(View.INVISIBLE);
+                        Toast.makeText(getContext(), "Tải thành công: " + version.getName(), Toast.LENGTH_SHORT).show();
+                    }
                 });
 
             } catch (Exception e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(() -> {
-                    binding.progressBarLayout.setVisibility(View.INVISIBLE);
-                    Toast.makeText(getContext(), "Lỗi tải file: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                // Update the same notification to error state
+                builder.setSmallIcon(android.R.drawable.stat_notify_error)
+                        .setCategory(NotificationCompat.CATEGORY_STATUS)
+                        .setContentTitle("Download failed")
+                        .setContentText(e.getMessage())
+                        .setOngoing(false)
+                        .setOnlyAlertOnce(false)
+                        .setAutoCancel(true)
+                        .setProgress(0,0,false);
+                try { nmc.notify(notificationId, builder.build()); } catch (SecurityException ignore) {}
+                runOnUiThreadSafe(() -> {
+                    if (binding != null && binding.progressBarLayout != null) {
+                        binding.progressBarLayout.setVisibility(View.INVISIBLE);
+                        Toast.makeText(getContext(), "Lỗi tải file: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 });
+            } finally {
+                if (connection != null) {
+                    try { connection.disconnect(); } catch (Exception ignore) {}
+                }
             }
         }).start();
+    }
+
+    private void runOnUiThreadSafe(Runnable r) {
+        if (!isAdded()) return;
+        try {
+            requireActivity().runOnUiThread(r);
+        } catch (IllegalStateException ignored) { }
     }
 
     @Override

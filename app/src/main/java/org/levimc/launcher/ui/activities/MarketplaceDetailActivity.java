@@ -14,13 +14,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 
 import org.levimc.launcher.R;
+import org.levimc.launcher.databinding.ActivityMarketplaceDetailBinding;
 import org.levimc.launcher.network.ApiClient;
 
 import java.util.Locale;
@@ -29,7 +29,7 @@ import java.util.Set;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 
-public class MarketplaceDetailActivity extends AppCompatActivity {
+public class MarketplaceDetailActivity extends BaseActivity {
 
     private String id, name, description, imageUrl, owner, ownerUrl, type, url;
     private double price;
@@ -39,6 +39,8 @@ public class MarketplaceDetailActivity extends AppCompatActivity {
     private TextView title, typeChip, author, count, priceView, balanceView, descView;
     private Button primaryBtn;
     private ProgressBar progress;
+
+    private ActivityMarketplaceDetailBinding binding;
 
     private boolean isOwned = false;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -70,6 +72,10 @@ public class MarketplaceDetailActivity extends AppCompatActivity {
         primaryBtn = findViewById(R.id.primaryBtn);
         progress = findViewById(R.id.progress);
 
+        // Wire up back button to finish the activity
+        Button btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> finish());
+
         title.setText(TextUtils.isEmpty(name) ? "(no title)" : name);
         typeChip.setText(displayType(type));
         author.setText(TextUtils.isEmpty(owner) ? "Unknown" : owner);
@@ -79,6 +85,7 @@ public class MarketplaceDetailActivity extends AppCompatActivity {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ownerUrl)));
             }
         });
+
         count.setText("1 " + displayType(type));
         descView.setText(TextUtils.isEmpty(description) ? getString(R.string.no_description) : description);
 
@@ -111,10 +118,12 @@ public class MarketplaceDetailActivity extends AppCompatActivity {
 
     private void refreshOwnedAndBalance() {
         setLoading(true);
+        primaryBtn.setVisibility(View.GONE);
         // Prefer a direct ownership check when possible
         ApiClient.checkOwnedAsync(this, id, packId, (owned, balance, error) -> {
             mainHandler.post(() -> {
                 setLoading(false);
+                primaryBtn.setVisibility(View.VISIBLE);
                 if (owned != null) {
                     isOwned = owned;
                     primaryBtn.setText(isOwned ? R.string.download_now : R.string.buy_now);

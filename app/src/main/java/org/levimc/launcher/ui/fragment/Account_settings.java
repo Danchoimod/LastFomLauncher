@@ -1,8 +1,12 @@
 package org.levimc.launcher.ui.fragment;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import org.levimc.launcher.R;
+import org.levimc.launcher.databinding.FragmentAccountSettingsBinding;
+
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -22,11 +26,12 @@ public class Account_settings extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    //binding
+    private FragmentAccountSettingsBinding binding;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    private TextView userName;
 
     public Account_settings() {
         // Required empty public constructor
@@ -65,18 +70,21 @@ public class Account_settings extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_account_settings, container, false);
+        binding = FragmentAccountSettingsBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         // Lấy SharedPreferences
         SharedPreferences prefs = requireContext().getSharedPreferences("user_info", 0);
         String avatarUrl = prefs.getString("avatar_url", "");
         String username = prefs.getString("username", "Guest");
 
-        // Ví dụ: set vào TextView và ImageView (nếu có)
-        TextView userName = view.findViewById(R.id.username);
+        binding.username.setText(username);
 
-        userName.setText(username);
+        // Bind changeinfo click to open browser
+        binding.changeinfo.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://lflauncher.vercel.app/account"));
+            startActivity(intent);
+        });
 
         return view;
     }

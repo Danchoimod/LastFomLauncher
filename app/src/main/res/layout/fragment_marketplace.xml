@@ -23,6 +23,7 @@
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         >
         <androidx.recyclerview.widget.RecyclerView
@@ -32,6 +33,21 @@
             android:padding="8dp"
             tools:listitem="@layout/item_marketplace" />
     </LinearLayout>
+
+    <!-- Initial loading indicator for left list -->
+    <ProgressBar
+        android:id="@+id/leftLoading"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias="0.5"/>
 
     <ScrollView
         android:id="@+id/rightSidebar"

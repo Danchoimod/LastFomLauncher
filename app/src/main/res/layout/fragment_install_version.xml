@@ -59,6 +59,15 @@
             android:layout_width="300sp"
             android:layout_height="wrap_content"
             ></Spinner>
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="uknown description"
+            android:layout_marginTop="10dp"
+            android:textColor="#878787"
+            android:textSize="12dp"
+            ></TextView>
 
     </LinearLayout>
     <TextView

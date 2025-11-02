@@ -213,12 +213,12 @@
 
     <array name="pack_type_spinenr">
         <item>All</item>
+        <item>Maps</item>
+        <item>Skin</item>
+        <item>Texture Pack</item>
         <item>Addon</item>
-        <item>Texture</item>
-        <item>Skins</item>
-        <item>map</item>
     </array>
-    
+
     <!-- Marketplace detail -->
     <string name="purchase_success">Mua thành công</string>
     <string name="purchase_failed">Mua thất bại</string>

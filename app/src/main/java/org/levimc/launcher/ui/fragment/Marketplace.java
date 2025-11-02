@@ -2,14 +2,16 @@ package org.levimc.launcher.ui.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -38,7 +41,8 @@ public class Marketplace extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private static final int PAGE_SIZE = 10;
+    // Only load 5 items per page
+    private static final int PAGE_SIZE = 5;
 
     private String mParam1;
     private String mParam2;
@@ -52,6 +56,8 @@ public class Marketplace extends Fragment {
 
     private String selectedType = "all"; // from spinner
     private String searchQuery = "";
+
+    private boolean firstPageLoading = false;
 
     public Marketplace() { }
 
@@ -86,11 +92,18 @@ public class Marketplace extends Fragment {
                 R.array.pack_type_spinenr,
                 R.layout.spinner_item
         );
+
+
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.packSpinner.setAdapter(spinAdapter);
 
         // RecyclerView setup
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.recyclerView.setHasFixedSize(true);
+        RecyclerView.ItemAnimator animator = binding.recyclerView.getItemAnimator();
+        if (animator instanceof SimpleItemAnimator) {
+            ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+        }
         adapter = new MarketplaceAdapter(item -> {
             // Open detail page
             Intent i = new Intent(requireContext(), org.levimc.launcher.ui.activities.MarketplaceDetailActivity.class);
@@ -137,12 +150,25 @@ public class Marketplace extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String value = parent.getItemAtPosition(position).toString();
+                String oldType = selectedType;
                 selectedType = mapSpinnerToType(value);
-                resetAndLoad();
+                Log.d("Marketplace", "Spinner selected: '" + value + "' -> mapped to: '" + selectedType + "'");
+                if (!selectedType.equals(oldType)) {
+                    resetAndLoad();
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
+        // Add LFCoin button - Navigate to getCoin fragment
+        binding.addLfCoinText.setOnClickListener(v -> {
+            getCoin getCoinFragment = new getCoin();
+            getParentFragmentManager().beginTransaction()
+                .replace(R.id.bedrockContent, getCoinFragment)
+                .addToBackStack(null)
+                .commit();
         });
 
         // Initial load
@@ -164,23 +190,39 @@ public class Marketplace extends Fragment {
         lastVisible = null;
         hasMore = true;
         adapter.setItems(new ArrayList<>());
+        // First-page loading state
+        firstPageLoading = true;
+        binding.recyclerView.setVisibility(View.INVISIBLE);
+        binding.leftLoading.setVisibility(View.VISIBLE);
         loadMore();
     }
 
     private void loadMore() {
         if (isLoading || !hasMore) return;
         isLoading = true;
-        adapter.showLoadingFooter(true);
+
+        // Only show adapter footer if not first page
+        if (!firstPageLoading) {
+            adapter.showLoadingFooter(true);
+        }
 
         Query q = db.collection("marketplace");
-        if (!TextUtils.isEmpty(selectedType) && !"all".equalsIgnoreCase(selectedType)) {
+        boolean hasTypeFilter = !TextUtils.isEmpty(selectedType) && !"all".equalsIgnoreCase(selectedType);
+
+        if (hasTypeFilter) {
+            Log.d("Marketplace", "Filtering by type: " + selectedType);
             q = q.whereEqualTo("type", selectedType);
+        } else {
+            Log.d("Marketplace", "Loading all items (no type filter)");
         }
+
         if (!TextUtils.isEmpty(searchQuery)) {
             q = q.orderBy("name").startAt(searchQuery).endAt(searchQuery + "\uf8ff");
-        } else {
+        } else if (!hasTypeFilter) {
+            // Only sort by createdAt when NOT filtering by type to avoid requiring composite index
             q = q.orderBy("createdAt", Query.Direction.DESCENDING);
         }
+
         if (lastVisible != null) {
             q = q.startAfter(lastVisible);
         }
@@ -190,8 +232,10 @@ public class Marketplace extends Fragment {
         task.addOnSuccessListener(snap -> {
             List<MarketplaceItem> page = new ArrayList<>();
             for (DocumentSnapshot d : snap.getDocuments()) {
-                page.add(MarketplaceItem.from(d));
+                MarketplaceItem item = MarketplaceItem.from(d);
+                page.add(item);
             }
+
             if (!page.isEmpty()) {
                 lastVisible = snap.getDocuments().get(snap.size() - 1);
                 if (adapter.getItemCount() == 0) {
@@ -204,24 +248,31 @@ public class Marketplace extends Fragment {
                 hasMore = false;
             }
         }).addOnFailureListener(e -> {
-            // TODO: show a toast/log if needed
+            Log.e("Marketplace", "Error loading items", e);
+            if (isAdded()) {
+                Toast.makeText(requireContext(), "Lỗi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }).addOnCompleteListener(done -> {
             isLoading = false;
-            adapter.showLoadingFooter(false);
+            if (firstPageLoading) {
+                firstPageLoading = false;
+                binding.leftLoading.setVisibility(View.GONE);
+                binding.recyclerView.setVisibility(View.VISIBLE);
+            } else {
+                adapter.showLoadingFooter(false);
+            }
         });
     }
 
     private String mapSpinnerToType(String value) {
         if (value == null) return "all";
         String v = value.trim().toLowerCase();
-        // Map common Vietnamese/English labels (case-insensitive) to Firestore "type" values
+        // Map display text to exact Firestore field values
         if (v.contains("all") || v.contains("tất cả")) return "all";
-        if (v.contains("map")) return "maps";                    // "Maps" or "Map"
-        if (v.contains("mod")) return "mods";                    // Mods
-        if (v.contains("skin")) return "skins";                  // Skins
-        if (v.contains("addon") || v.contains("add-on")) return "addon"; // Addon
-        // Your Firestore stores textures as "texture pack"
-        if (v.contains("texture") || v.contains("resource")) return "texture pack";
+        if (v.contains("map")) return "maps";                    // "Maps" -> "maps"
+        if (v.contains("skin")) return "skin";                   // "Skin" -> "skin"
+        if (v.contains("texture") || v.contains("resource")) return "texture pack"; // "Texture Pack" -> "texture pack"
+        if (v.contains("addon") || v.contains("add-on")) return "addon"; // "Addon" -> "addon"
         return v; // fallback: use as-is
     }
 

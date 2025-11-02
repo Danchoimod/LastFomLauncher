@@ -103,13 +103,55 @@ public class Play extends Fragment {
         binding.launchButton.setEnabled(false);
         binding.progressLoader.setVisibility(View.VISIBLE);
         GameVersion version = versionManager != null ? versionManager.getSelectedVersion() : null;
-        minecraftLauncher.launch(requireActivity().getIntent(), version);
-        requireActivity().runOnUiThread(() -> {
-            if (binding != null) {
-                binding.progressLoader.setVisibility(View.GONE);
-                binding.launchButton.setEnabled(true);
+
+        // Chạy trong thread riêng để bắt lỗi native library
+        new Thread(() -> {
+            try {
+                minecraftLauncher.launch(requireActivity().getIntent(), version);
+                requireActivity().runOnUiThread(() -> {
+                    if (binding != null) {
+                        binding.progressLoader.setVisibility(View.GONE);
+                        binding.launchButton.setEnabled(true);
+                    }
+                });
+            } catch (UnsatisfiedLinkError e) {
+                // Lỗi native library (libc++_shared.so not found)
+                requireActivity().runOnUiThread(() -> {
+                    if (binding != null) {
+                        binding.progressLoader.setVisibility(View.GONE);
+                        binding.launchButton.setEnabled(true);
+                    }
+                    // Mở ứng dụng Minecraft PE
+                    try {
+                        Intent intent = requireActivity().getPackageManager().getLaunchIntentForPackage("com.mojang.minecraftpe");
+                        if (intent != null) {
+                            startActivity(intent);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    Toast.makeText(requireContext(), "Ứng dụng không được hỗ trợ", Toast.LENGTH_LONG).show();
+                });
+            } catch (Exception e) {
+                // Lỗi khác
+                requireActivity().runOnUiThread(() -> {
+                    if (binding != null) {
+                        binding.progressLoader.setVisibility(View.GONE);
+                        binding.launchButton.setEnabled(true);
+                    }
+                    // Mở ứng dụng Minecraft PE
+                    try {
+                        Intent intent = requireActivity().getPackageManager().getLaunchIntentForPackage("com.mojang.minecraftpe");
+                        if (intent != null) {
+                            startActivity(intent);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    Toast.makeText(requireContext(), "Phiên bản này không tương thích", Toast.LENGTH_LONG).show();
+                });
             }
-        });
+        }).start();
     }
 
 
