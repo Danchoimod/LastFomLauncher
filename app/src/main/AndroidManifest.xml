@@ -195,7 +195,7 @@ tools:ignore="MissingClass">
         android:exported="false"
         android:launchMode="singleTask"
         android:screenOrientation="sensorLandscape"
-        android:theme="@style/LegacyEditText"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:ignore="DiscouragedApi">
         <meta-data
             android:name="android.app.lib_name"

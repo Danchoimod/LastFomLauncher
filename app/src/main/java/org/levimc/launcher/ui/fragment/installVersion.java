@@ -324,26 +324,52 @@ public class installVersion extends Fragment {
                     runOnUiThreadSafe(() -> { if (binding != null) binding.progressBar.setIndeterminate(true); });
                 }
 
+                // Throttling variables - chỉ cập nhật mỗi 5% hoặc mỗi 500ms
+                int lastProgress = -1;
+                long lastUpdateTime = 0;
+                final long UPDATE_INTERVAL_MS = 500; // Cập nhật tối đa mỗi 500ms
+                final int PROGRESS_STEP = 5; // Cập nhật mỗi 5%
+
                 try (InputStream input = connection.getInputStream(); FileOutputStream output = new FileOutputStream(destinationFile)) {
-                    byte[] buffer = new byte[8192];
+                    byte[] buffer = new byte[16384]; // Tăng buffer size để giảm số lần đọc
                     long total = 0;
                     int count;
                     while ((count = input.read(buffer)) != -1) {
                         total += count;
+                        output.write(buffer, 0, count);
+
                         if (!unknownLength) {
                             final int progress = (int) (total * 100 / fileLength);
-                            builder.setProgress(100, progress, false).setContentText(progress + "%");
-                            try { nmc.notify(notificationId, builder.build()); } catch (SecurityException ignore) {}
-                            final int p = progress;
-                            runOnUiThreadSafe(() -> {
-                                if (binding != null) {
-                                    binding.progressBar.setIndeterminate(false);
-                                    binding.progressBar.setProgress(p);
-                                    binding.tvDownloading.setText("Downloading " + version.getName() + "... " + p + "%");
-                                }
-                            });
+                            long currentTime = System.currentTimeMillis();
+
+                            // Chỉ cập nhật nếu:
+                            // 1. Progress thay đổi ít nhất 5% HOẶC
+                            // 2. Đã qua ít nhất 500ms kể từ lần cập nhật cuối
+                            boolean shouldUpdate = (progress - lastProgress >= PROGRESS_STEP) ||
+                                                 (currentTime - lastUpdateTime >= UPDATE_INTERVAL_MS);
+
+                            if (shouldUpdate) {
+                                lastProgress = progress;
+                                lastUpdateTime = currentTime;
+
+                                // Cập nhật notification (giảm từ mỗi lần đọc xuống còn mỗi 5% hoặc 500ms)
+                                builder.setProgress(100, progress, false)
+                                       .setContentText(progress + "%");
+                                try {
+                                    nmc.notify(notificationId, builder.build());
+                                } catch (SecurityException ignore) {}
+
+                                // Cập nhật UI
+                                final int p = progress;
+                                runOnUiThreadSafe(() -> {
+                                    if (binding != null) {
+                                        binding.progressBar.setIndeterminate(false);
+                                        binding.progressBar.setProgress(p);
+                                        binding.tvDownloading.setText("Downloading " + version.getName() + "... " + p + "%");
+                                    }
+                                });
+                            }
                         }
-                        output.write(buffer, 0, count);
                     }
                     output.flush();
                 }
