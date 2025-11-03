@@ -12,21 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-import com.google.android.gms.ads.rewarded.ServerSideVerificationOptions;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.IUnityAdsLoadListener;
+import com.unity3d.ads.IUnityAdsShowListener;
+import com.unity3d.ads.UnityAds;
 
+import org.levimc.launcher.R;
 import org.levimc.launcher.databinding.FragmentGetCoinBinding;
+import org.levimc.launcher.utils.AchievementNotificationUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,29 +29,31 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class getCoin extends Fragment {
+public class getCoin extends Fragment implements IUnityAdsInitializationListener, IUnityAdsLoadListener, IUnityAdsShowListener {
 
     private static final String TAG = "getCoin";
     private static final int MAX_ADS_PER_DAY = 10;
     private static final int COINS_PER_AD = 10;
     private static final int DAILY_REWARD_COINS = 5;
 
-    // Production Ad Unit ID - Get from AdMob Console
-    // Bước 1: Vào https://apps.admob.com
-    // Bước 2: Chọn app của bạn -> Ad units
-    // Bước 3: Copy Ad unit ID của Rewarded ad unit
-    private static final String AD_UNIT_ID = "ca-app-pub-8177702634836557/8123511561"; // ⚠️ REPLACE WITH YOUR REAL AD UNIT ID
-    // Test ID (for testing): ca-app-pub-3940256099942544/5224354917
+    // Unity Ads Configuration
+    // Get your Game ID from Unity Dashboard: https://dashboard.unity3d.com/
+    // Step 1: Go to https://dashboard.unity3d.com/
+    // Step 2: Select your project
+    // Step 3: Go to Monetization -> Ad units
+    // Step 4: Copy your Game ID and Rewarded placement ID
+    private static final String UNITY_GAME_ID = "5974445"; // ⚠️ REPLACE WITH YOUR GAME ID
+    private static final String AD_UNIT_ID = "Rewarded_Android"; // Default placement ID for rewarded ads
+    private static final boolean TEST_MODE = false; // Set to false for production
 
     private FragmentGetCoinBinding binding;
-    private RewardedAd rewardedAd;
     private SharedPreferences prefs;
     private FirebaseFirestore db;
     private String userId;
 
     private int adsWatchedToday = 0;
     private boolean dailyRewardClaimed = false;
-    private boolean isLoadingAd = false;
+    private boolean isAdReady = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,10 +62,8 @@ public class getCoin extends Fragment {
         userId = prefs.getString("user_id", null);
         db = FirebaseFirestore.getInstance();
 
-        // Initialize Mobile Ads SDK
-        MobileAds.initialize(requireContext(), initializationStatus -> {
-            Log.d(TAG, "AdMob initialized");
-        });
+        // Initialize Unity Ads SDK
+        UnityAds.initialize(requireContext(), UNITY_GAME_ID, TEST_MODE, this);
     }
 
     @Nullable
@@ -99,9 +94,6 @@ public class getCoin extends Fragment {
 
         // Claim Daily button
         binding.claimDailyButton.setOnClickListener(v -> claimDailyReward());
-
-        // Load first ad
-        loadRewardedAd();
     }
 
     private void claimDailyReward() {
@@ -128,6 +120,14 @@ public class getCoin extends Fragment {
                 Toast.makeText(requireContext(),
                     "Claimed " + DAILY_REWARD_COINS + " coins successfully! ✓",
                     Toast.LENGTH_SHORT).show();
+
+                // Show achievement-style notification
+                AchievementNotificationUtil.showNotification(
+                    requireActivity(),
+                    R.drawable.coin,
+                    "Phần thưởng hàng ngày!",
+                    "+" + DAILY_REWARD_COINS + " LF Coins"
+                );
             })
             .addOnFailureListener(e -> {
                 Log.e(TAG, "Failed to claim daily reward", e);
@@ -136,56 +136,8 @@ public class getCoin extends Fragment {
     }
 
     private void loadRewardedAd() {
-        if (isLoadingAd) return;
-
-        isLoadingAd = true;
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        RewardedAd.load(requireContext(), AD_UNIT_ID, adRequest, new RewardedAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull RewardedAd ad) {
-                rewardedAd = ad;
-                isLoadingAd = false;
-                Log.d(TAG, "Rewarded ad loaded");
-
-                // Set Server-Side Verification Options
-                ServerSideVerificationOptions options = new ServerSideVerificationOptions.Builder()
-                    .setCustomData("user_id=" + userId + "&reward_amount=" + COINS_PER_AD)
-                    .setUserId(userId)
-                    .build();
-                rewardedAd.setServerSideVerificationOptions(options);
-
-                // Set callback for full screen content
-                rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                    @Override
-                    public void onAdDismissedFullScreenContent() {
-                        Log.d(TAG, "Ad dismissed");
-                        rewardedAd = null;
-                        loadRewardedAd(); // Load next ad
-                    }
-
-                    @Override
-                    public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                        Log.e(TAG, "Ad failed to show: " + adError.getMessage());
-                        rewardedAd = null;
-                        isLoadingAd = false;
-                        Toast.makeText(requireContext(), "Failed to show ad", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onAdShowedFullScreenContent() {
-                        Log.d(TAG, "Ad showed fullscreen");
-                    }
-                });
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                Log.e(TAG, "Failed to load ad: " + loadAdError.getMessage());
-                rewardedAd = null;
-                isLoadingAd = false;
-            }
-        });
+        Log.d(TAG, "Loading Unity rewarded ad...");
+        UnityAds.load(AD_UNIT_ID, this);
     }
 
     private void showRewardedAd() {
@@ -195,46 +147,15 @@ public class getCoin extends Fragment {
             return;
         }
 
-        if (rewardedAd == null) {
+        if (!isAdReady) {
             Toast.makeText(requireContext(), "Ad is not ready yet. Please try again in a moment.",
                 Toast.LENGTH_SHORT).show();
-            if (!isLoadingAd) {
-                loadRewardedAd(); // Try loading again
-            }
+            loadRewardedAd(); // Try loading again
             return;
         }
 
-        rewardedAd.show(requireActivity(), new OnUserEarnedRewardListener() {
-            @Override
-            public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                // User earned reward
-                Log.d(TAG, "User earned reward: " + rewardItem.getAmount());
-
-                // Increment counter and save to Firestore
-                adsWatchedToday++;
-                saveAdWatchCountToFirestore();
-
-                // Also increment coins directly (in case SSV callback fails or is not configured)
-                grantAdRewardCoins();
-
-                updateUI();
-
-                Toast.makeText(requireContext(),
-                    "+" + COINS_PER_AD + " coins earned! ✓",
-                    Toast.LENGTH_SHORT).show();
-
-                // If reached limit, go back to marketplace
-                if (adsWatchedToday >= MAX_ADS_PER_DAY) {
-                    Toast.makeText(requireContext(),
-                        "Daily limit reached! Come back tomorrow.",
-                        Toast.LENGTH_LONG).show();
-
-                    if (getParentFragmentManager() != null) {
-                        getParentFragmentManager().popBackStack();
-                    }
-                }
-            }
-        });
+        // Show the ad
+        UnityAds.show(requireActivity(), AD_UNIT_ID, this);
     }
 
     /**
@@ -395,5 +316,103 @@ public class getCoin extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    // Unity Ads Initialization Listener
+    @Override
+    public void onInitializationComplete() {
+        Log.d(TAG, "Unity Ads initialized successfully");
+        loadRewardedAd(); // Load first ad after initialization
+    }
+
+    @Override
+    public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
+        Log.e(TAG, "Unity Ads initialization failed: " + error.toString() + " - " + message);
+        Toast.makeText(requireContext(), "Ad initialization failed", Toast.LENGTH_SHORT).show();
+    }
+
+    // Unity Ads Load Listener
+    @Override
+    public void onUnityAdsAdLoaded(String placementId) {
+        Log.d(TAG, "Unity Ads loaded: " + placementId);
+        isAdReady = true;
+        updateUI();
+    }
+
+    @Override
+    public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+        Log.e(TAG, "Unity Ads failed to load: " + placementId + " - " + error.toString() + " - " + message);
+        isAdReady = false;
+        Toast.makeText(requireContext(), "Failed to load ad", Toast.LENGTH_SHORT).show();
+    }
+
+    // Unity Ads Show Listener
+    @Override
+    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+        Log.e(TAG, "Unity Ads show failed: " + placementId + " - " + error.toString() + " - " + message);
+        isAdReady = false;
+        Toast.makeText(requireContext(), "Failed to show ad", Toast.LENGTH_SHORT).show();
+        loadRewardedAd(); // Try loading again
+    }
+
+    @Override
+    public void onUnityAdsShowStart(String placementId) {
+        Log.d(TAG, "Unity Ads show start: " + placementId);
+    }
+
+    @Override
+    public void onUnityAdsShowClick(String placementId) {
+        Log.d(TAG, "Unity Ads clicked: " + placementId);
+    }
+
+    @Override
+    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+        Log.d(TAG, "Unity Ads show complete: " + placementId + " - " + state.toString());
+
+        isAdReady = false;
+
+        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+            // User watched the complete ad and should be rewarded
+            Log.d(TAG, "User earned reward");
+
+            // Increment counter and save to Firestore
+            adsWatchedToday++;
+            saveAdWatchCountToFirestore();
+
+            // Grant coins to user
+            grantAdRewardCoins();
+
+            updateUI();
+
+            // Show toast notification
+            Toast.makeText(requireContext(),
+                "+" + COINS_PER_AD + " coins earned! ✓",
+                Toast.LENGTH_SHORT).show();
+
+            // Show achievement-style notification with animation
+            AchievementNotificationUtil.showNotification(
+                requireActivity(),
+                R.drawable.coin,
+                "Nhận thưởng!",
+                "+" + COINS_PER_AD + " LF Coins từ quảng cáo"
+            );
+
+            // If reached limit, go back to marketplace
+            if (adsWatchedToday >= MAX_ADS_PER_DAY) {
+                Toast.makeText(requireContext(),
+                    "Daily limit reached! Come back tomorrow.",
+                    Toast.LENGTH_LONG).show();
+
+                if (getParentFragmentManager() != null) {
+                    getParentFragmentManager().popBackStack();
+                }
+            }
+        } else if (state == UnityAds.UnityAdsShowCompletionState.SKIPPED) {
+            Log.d(TAG, "User skipped ad");
+            Toast.makeText(requireContext(), "Ad skipped - no reward", Toast.LENGTH_SHORT).show();
+        }
+
+        // Load next ad
+        loadRewardedAd();
     }
 }

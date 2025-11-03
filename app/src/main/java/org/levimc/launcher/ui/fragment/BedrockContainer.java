@@ -6,6 +6,7 @@ import org.levimc.launcher.databinding.FragmentBedrockContainerBinding;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.util.ComingSoonUtil;
 import org.levimc.launcher.util.SoundPoolUtil;
+import org.levimc.launcher.utils.AchievementNotificationUtil;
 
 import androidx.fragment.app.Fragment;
 
@@ -97,7 +98,12 @@ public class BedrockContainer extends Fragment {
             btnNavFAQ.setOnClickListener(v -> changeFragment(3));
             btnNavPatchNotes.setOnClickListener(v -> changeFragment(4));
             btnMarketplace.setOnClickListener(v -> changeFragment(5));
-            btnModules.setOnClickListener(v -> ComingSoonUtil.show(getContext()));
+            btnModules.setOnClickListener(v ->             AchievementNotificationUtil.showNotification(
+                    requireActivity(),
+                    R.drawable.paper,
+                    "Notification",
+                    "This feature is currently under development."
+            ));
         }
         return view;
     }
@@ -130,7 +136,12 @@ public class BedrockContainer extends Fragment {
             case 6:
 //                showGreen(5);
 //                return; // No fragment to show, exit early
-                ComingSoonUtil.show(getContext());
+                AchievementNotificationUtil.showNotification(
+                        requireActivity(),
+                        R.drawable.paper,
+                        "Notification",
+                        "This feature is currently under development."
+                );
             default:
                 throw new IllegalArgumentException("Screen number không hợp lệ: " + screenOfNumber);
         }

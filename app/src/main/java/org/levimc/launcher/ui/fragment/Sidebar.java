@@ -8,6 +8,7 @@ import org.levimc.launcher.R;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.util.ComingSoonUtil;
 import org.levimc.launcher.util.SoundPoolUtil;
+import org.levimc.launcher.utils.AchievementNotificationUtil;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,7 +119,12 @@ public class Sidebar extends Fragment {
         // Click listeners
         javaEdition.setOnClickListener(v -> {
 //            toggleSelection(javaEdition);
-            ComingSoonUtil.show(getContext());
+            AchievementNotificationUtil.showNotification(
+                    requireActivity(),
+                    R.drawable.paper,
+                    "Notification",
+                    "This feature is currently under development."
+            );
 
         });
         btnSettings.setOnClickListener(v -> {
