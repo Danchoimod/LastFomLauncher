@@ -78,6 +78,17 @@ android {
         }
     }
     ndkVersion "25.2.9519653"
+
+    packagingOptions {
+        resources {
+            excludes += [
+                // Exclude any stray Braze resources if present in transitive deps
+                "res/drawable*/com_braze_*",
+                "res/layout*/com_braze_*",
+                "res/color*/com_braze_*"
+            ]
+        }
+    }
 }
 
 dependencies {

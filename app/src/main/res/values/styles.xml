@@ -1,16 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppFullScreenTheme" parent="Theme.AppCompat.NoActionBar">
+
+    <!-- Theme chính: full screen + NoActionBar -->
+    <style name="AppFullScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Các thuộc tính toàn màn hình -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
+
+        <!-- Áp dụng style riêng cho EditText (đặt cả 2 namespace để an toàn) -->
+        <item name="editTextStyle">@style/LegacyEditText</item>
+        <item name="android:editTextStyle">@style/LegacyEditText</item>
     </style>
-    <style name="LegacyEditText" parent="@style/Widget.AppCompat.EditText">
-        <item name="android:background">?attr/editTextBackground</item>
+
+    <!--
+        Theme cho Minecraft Launcher - Tương thích cả 2 phiên bản
+        Bản 1: Cần LegacyEditText style
+        Bản 2: Cần Theme.AppCompat
+        Giải pháp: Theme.AppCompat + editTextStyle = LegacyEditText
+    -->
+    <style name="MinecraftLauncherTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Full screen attributes -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
+
+        <!-- Áp dụng LegacyEditText cho tất cả EditText (đặt cả 2 namespace) -->
+        <item name="editTextStyle">@style/LegacyEditText</item>
+        <item name="android:editTextStyle">@style/LegacyEditText</item>
+
+        <!-- Use app-scoped colors to avoid resolving system material resources -->
+        <item name="android:textColorHighlight">@color/lf_text_highlight</item>
+        <item name="colorControlHighlight">@color/lf_color_control_highlight</item>
+
+        <!-- Thêm compatibility cho cả 2 bản -->
+        <item name="android:windowBackground">@android:color/black</item>
+
+        <!-- Áp dụng LegacyTextView cho tất cả TextView -->
+        <item name="android:textViewStyle">@style/LegacyTextView</item>
+
+        <!-- Áp dụng LegacyTextAppearance cho tất cả TextView (đặt cả 2 namespace để an toàn) -->
+        <item name="android:textAppearance">@style/LegacyTextAppearance</item>
+        <item name="android:textAppearanceLarge">@style/LegacyTextAppearance.Large</item>
+        <item name="android:textAppearanceMedium">@style/LegacyTextAppearance.Medium</item>
+        <item name="android:textAppearanceSmall">@style/LegacyTextAppearance.Small</item>
     </style>
+
+    <!-- Style riêng cho EditText - dùng platform widget để tránh phụ thuộc material/appcompat drawables -->
+    <style name="LegacyEditText" parent="@android:style/Widget.EditText">
+        <!-- Bắt buộc: dùng custom drawable để tránh edit_text_material -->
+        <item name="android:background">@drawable/edittext_background</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textColorHint">#AAAAAA</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textColorHighlight">@color/lf_text_highlight</item>
+        <item name="android:textCursorDrawable">@null</item>
+    </style>
+
+    <!-- Style riêng cho TextView - dùng platform widget để tránh phụ thuộc material/appcompat drawables -->
+    <style name="LegacyTextView" parent="@android:style/Widget.TextView">
+        <item name="android:textColorHighlight">@color/lf_text_highlight</item>
+    </style>
+
+    <style name="LegacyTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColorHighlight">@color/lf_text_highlight</item>
+    </style>
+
+    <style name="LegacyTextAppearance.Large" parent="@android:style/TextAppearance.Large">
+        <item name="android:textColorHighlight">@color/lf_text_highlight</item>
+    </style>
+
+    <style name="LegacyTextAppearance.Medium" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColorHighlight">@color/lf_text_highlight</item>
+    </style>
+
+    <style name="LegacyTextAppearance.Small" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColorHighlight">@color/lf_text_highlight</item>
+    </style>
+
 </resources>
