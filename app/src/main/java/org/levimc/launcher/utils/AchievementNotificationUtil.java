@@ -103,6 +103,7 @@ public class AchievementNotificationUtil {
             fadeIn.setDuration(ANIMATION_DURATION / 2);
 
             // Start animations
+
             slideIn.start();
             fadeIn.start();
 

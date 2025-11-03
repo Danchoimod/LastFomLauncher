@@ -55,6 +55,7 @@ tools:ignore="MissingClass">
         android:name="org.levimc.launcher.ui.activities.SplashActivity"
         android:exported="true"
         android:screenOrientation="sensorLandscape"
+        android:launchMode="singleTask"
         tools:ignore="DiscouragedApi">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
@@ -119,6 +120,7 @@ tools:ignore="MissingClass">
         android:name="org.levimc.launcher.ui.activities.MainLauncher"
         android:exported="false"
         android:screenOrientation="sensorLandscape"
+        android:launchMode="singleTask"
         tools:ignore="DiscouragedApi" />
 
     <activity

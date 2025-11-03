@@ -118,8 +118,9 @@ public class Sidebar extends Fragment {
 
         // Click listeners
         javaEdition.setOnClickListener(v -> {
-//            toggleSelection(javaEdition);
+            SoundPoolUtil.play(getContext(), R.raw.boot_up);
             AchievementNotificationUtil.showNotification(
+
                     requireActivity(),
                     R.drawable.paper,
                     "Notification",

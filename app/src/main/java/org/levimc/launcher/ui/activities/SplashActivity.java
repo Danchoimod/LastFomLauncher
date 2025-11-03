@@ -148,12 +148,14 @@ public class SplashActivity extends BaseActivity {
                                 // Nếu có update, chuyển vào DownloadData
                                 if (needUpdate) {
                                     Intent intent = new Intent(this, DownloadData.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
                                     finish();
                                 } else {
                                     // Không có update, vào MainLauncher
                                     SoundPoolUtil.play(this, R.raw.boot_up_2);
                                     Intent intent = new Intent(this, MainLauncher.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -167,6 +169,7 @@ public class SplashActivity extends BaseActivity {
                     // Nếu lỗi, vẫn vào MainLauncher
                     SoundPoolUtil.play(this, R.raw.boot_up_2);
                     Intent intent = new Intent(this, MainLauncher.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
                 });
@@ -187,11 +190,13 @@ public class SplashActivity extends BaseActivity {
 
         if (needUpdate) {
             Intent intent = new Intent(this, DownloadData.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
         } else {
             SoundPoolUtil.play(this, R.raw.boot_up_2);
             Intent intent = new Intent(this, MainLauncher.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
         }

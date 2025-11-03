@@ -98,12 +98,15 @@ public class BedrockContainer extends Fragment {
             btnNavFAQ.setOnClickListener(v -> changeFragment(3));
             btnNavPatchNotes.setOnClickListener(v -> changeFragment(4));
             btnMarketplace.setOnClickListener(v -> changeFragment(5));
-            btnModules.setOnClickListener(v ->             AchievementNotificationUtil.showNotification(
+            btnModules.setOnClickListener(v ->{AchievementNotificationUtil.showNotification(
                     requireActivity(),
                     R.drawable.paper,
                     "Notification",
                     "This feature is currently under development."
-            ));
+
+            );
+            SoundPoolUtil.play(getContext(), R.raw.boot_up);
+            });
         }
         return view;
     }
