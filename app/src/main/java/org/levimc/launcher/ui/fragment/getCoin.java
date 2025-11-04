@@ -86,6 +86,9 @@ public class getCoin extends Fragment implements IUnityAdsInitializationListener
             return;
         }
 
+        // Show loading spinner until the first ad gets loaded
+        setAdLoadingUi(true);
+
         // Load data from Firestore
         loadUserAdDataFromFirestore();
 
@@ -125,7 +128,7 @@ public class getCoin extends Fragment implements IUnityAdsInitializationListener
                 AchievementNotificationUtil.showNotification(
                     requireActivity(),
                     R.drawable.coin,
-                    "Phần thưởng hàng ngày!",
+                    "Daily reward!",
                     "+" + DAILY_REWARD_COINS + " LF Coins"
                 );
             })
@@ -135,8 +138,20 @@ public class getCoin extends Fragment implements IUnityAdsInitializationListener
             });
     }
 
+    private void setAdLoadingUi(boolean loading) {
+        if (binding == null) return;
+        binding.watchAdProgress.setVisibility(loading ? View.VISIBLE : View.GONE);
+        binding.watchAdButton.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
+        binding.watchAdButton.setEnabled(!loading && (adsWatchedToday < MAX_ADS_PER_DAY));
+        if (!loading) {
+            binding.watchAdButton.setAlpha(adsWatchedToday < MAX_ADS_PER_DAY ? 1.0f : 0.5f);
+        }
+    }
+
     private void loadRewardedAd() {
         Log.d(TAG, "Loading Unity rewarded ad...");
+        isAdReady = false;
+        setAdLoadingUi(true);
         UnityAds.load(AD_UNIT_ID, this);
     }
 
@@ -329,6 +344,7 @@ public class getCoin extends Fragment implements IUnityAdsInitializationListener
     public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
         Log.e(TAG, "Unity Ads initialization failed: " + error.toString() + " - " + message);
         Toast.makeText(requireContext(), "Ad initialization failed", Toast.LENGTH_SHORT).show();
+        setAdLoadingUi(false);
     }
 
     // Unity Ads Load Listener
@@ -336,6 +352,7 @@ public class getCoin extends Fragment implements IUnityAdsInitializationListener
     public void onUnityAdsAdLoaded(String placementId) {
         Log.d(TAG, "Unity Ads loaded: " + placementId);
         isAdReady = true;
+        setAdLoadingUi(false);
         updateUI();
     }
 
@@ -343,7 +360,17 @@ public class getCoin extends Fragment implements IUnityAdsInitializationListener
     public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
         Log.e(TAG, "Unity Ads failed to load: " + placementId + " - " + error.toString() + " - " + message);
         isAdReady = false;
+        // Keep progress visible until we successfully load an ad
+        setAdLoadingUi(true);
         Toast.makeText(requireContext(), "Failed to load ad", Toast.LENGTH_SHORT).show();
+        // Retry after a short delay to recover transient errors
+        if (binding != null) {
+            binding.getRoot().postDelayed(() -> {
+                if (isAdded()) {
+                    loadRewardedAd();
+                }
+            }, 2000);
+        }
     }
 
     // Unity Ads Show Listener
@@ -391,10 +418,10 @@ public class getCoin extends Fragment implements IUnityAdsInitializationListener
 
             // Show achievement-style notification with animation
             AchievementNotificationUtil.showNotification(
-                requireActivity(),
-                R.drawable.coin,
-                "Nhận thưởng!",
-                "+" + COINS_PER_AD + " LF Coins từ quảng cáo"
+                    requireActivity(),
+                    R.drawable.coin,
+                    "Reward received!",
+                    "+" + COINS_PER_AD + " LF Coins from ads"
             );
 
             // If reached limit, go back to marketplace
@@ -416,3 +443,4 @@ public class getCoin extends Fragment implements IUnityAdsInitializationListener
         loadRewardedAd();
     }
 }
+

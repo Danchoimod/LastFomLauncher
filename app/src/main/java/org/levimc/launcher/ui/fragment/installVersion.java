@@ -388,7 +388,7 @@ public class installVersion extends Fragment {
                 runOnUiThreadSafe(() -> {
                     if (binding != null && binding.progressBarLayout != null) {
                         binding.progressBarLayout.setVisibility(View.INVISIBLE);
-                        Toast.makeText(getContext(), "Tải thành công: " + version.getName(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Download sucess: " + version.getName(), Toast.LENGTH_SHORT).show();
                     }
                 });
 

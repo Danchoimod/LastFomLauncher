@@ -193,6 +193,16 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Progress shown while loading ads -->
+        <ProgressBar
+            android:id="@+id/watchAdProgress"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"
+            android:layout_marginBottom="12dp" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/watchAdButton"
             android:layout_width="match_parent"

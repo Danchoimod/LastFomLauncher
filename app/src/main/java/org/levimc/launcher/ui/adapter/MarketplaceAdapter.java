@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -44,7 +45,9 @@ public class MarketplaceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        // Wrap the context with a MaterialComponents theme so MaterialCardView inflates correctly
+        ContextThemeWrapper materialCtx = new ContextThemeWrapper(parent.getContext(), R.style.Theme_MaterialBridge);
+        LayoutInflater inflater = LayoutInflater.from(materialCtx);
         if (viewType == TYPE_ITEM) {
             View v = inflater.inflate(R.layout.item_marketplace, parent, false);
             return new ItemVH(v);

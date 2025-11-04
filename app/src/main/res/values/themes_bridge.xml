@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Local bridge theme for inflating Material components in isolated contexts -->
+    <style name="Theme.MaterialBridge" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- You can map app colors to Material attributes here if needed -->
+    </style>
+</resources>
+
