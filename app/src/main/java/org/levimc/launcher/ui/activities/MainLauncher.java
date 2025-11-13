@@ -17,6 +17,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import org.levimc.launcher.R;
 
 import org.levimc.launcher.core.minecraft.MinecraftLauncher;
@@ -35,6 +37,7 @@ import org.levimc.launcher.util.LanguageManager;
 import org.levimc.launcher.util.PermissionsHandler;
 import org.levimc.launcher.util.SoundPoolUtil;
 import org.levimc.launcher.util.UIHelper;
+import org.levimc.launcher.utils.AchievementNotificationUtil;
 
 public class MainLauncher extends AppCompatActivity {
     static {
@@ -42,8 +45,12 @@ public class MainLauncher extends AppCompatActivity {
     }
     private VersionManager versionManager;
     private MainViewModel viewModel;
+
+    private FirebaseFirestore db;
     private ActivityResultLauncher<Intent> permissionResultLauncher;
     private PermissionsHandler permissionsHandler;
+
+    private final String currentVersion = "1.1.3.2";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +61,8 @@ public class MainLauncher extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         setupManagersAndHandlers();
+        CheckUpdate();
         FeatureSettings.init(getApplicationContext());
-        repairNeededVersions();
         SoundPoolUtil.init(this);
         decorView.setSystemUiVisibility(uiOptions);
         // Lắng nghe khi người dùng vuốt hiện thanh nav/status bar
@@ -135,6 +142,31 @@ public class MainLauncher extends AppCompatActivity {
                 .setNegativeButton(getString(R.string.eula_exit), v -> finishAffinity());
         dia.setCancelable(false);
         dia.show();
+    }
+    public void CheckUpdate(){
+        //firebase firestore
+        db = FirebaseFirestore.getInstance();
+        db.collection("update").document("update")
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String latestVersion = documentSnapshot.getString("Name");
+                        if (!currentVersion.equals(latestVersion)) {
+                            SoundPoolUtil.play(this, R.raw.boot_up);
+                            AchievementNotificationUtil.showNotification(
+
+                                    this,
+                                    R.drawable.ic_update,
+                                    "Notification",
+                                    "A new version is available!"
+                            );
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Xử lý lỗi nếu cần
+                });
+
     }
     @Override
     @SuppressLint("MissingSuperCall")

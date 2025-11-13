@@ -32,7 +32,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private Button launcher_play_button;
     private ActivityWelcomeBinding binding;
-    private Boolean logined = false; // Mặc định false khi phát hành
+    private Boolean logined = true; // Mặc định false khi phát hành
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

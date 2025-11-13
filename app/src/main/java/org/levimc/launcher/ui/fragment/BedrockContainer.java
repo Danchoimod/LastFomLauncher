@@ -98,15 +98,7 @@ public class BedrockContainer extends Fragment {
             btnNavFAQ.setOnClickListener(v -> changeFragment(3));
             btnNavPatchNotes.setOnClickListener(v -> changeFragment(4));
             btnMarketplace.setOnClickListener(v -> changeFragment(5));
-            btnModules.setOnClickListener(v ->{AchievementNotificationUtil.showNotification(
-                    requireActivity(),
-                    R.drawable.paper,
-                    "Notification",
-                    "This feature is currently under development."
-
-            );
-            SoundPoolUtil.play(getContext(), R.raw.boot_up);
-            });
+            btnModules.setOnClickListener(v -> changeFragment(6));
         }
         return view;
     }
@@ -137,14 +129,9 @@ public class BedrockContainer extends Fragment {
                 showGreen(4);
                 break;
             case 6:
-//                showGreen(5);
-//                return; // No fragment to show, exit early
-                AchievementNotificationUtil.showNotification(
-                        requireActivity(),
-                        R.drawable.paper,
-                        "Notification",
-                        "This feature is currently under development."
-                );
+                fragment = new modules();
+                showGreen(5);
+                break;
             default:
                 throw new IllegalArgumentException("Screen number không hợp lệ: " + screenOfNumber);
         }
