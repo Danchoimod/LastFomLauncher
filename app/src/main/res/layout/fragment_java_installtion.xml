@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingHorizontal="30dp"
-    android:background="#171615"
+    android:background="#1E1E1E"
     android:id="@+id/main"
     tools:context="org.levimc.launcher.ui.fragment.javaInstalltion">
 

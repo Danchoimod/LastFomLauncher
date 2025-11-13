@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
+    android:background="#2A2A2A"
+    android:layout_marginVertical="2dp"
     android:gravity="center_vertical">
 
     <ImageView
@@ -14,7 +16,7 @@
         android:layout_marginEnd="8dp"
         android:src="@drawable/ic_drag_handle"
         android:contentDescription="@string/drag_to_reorder"
-        android:alpha="0.6"
+        android:tint="@color/white"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="4dp"/>
 
@@ -26,6 +28,7 @@
 
         <TextView
             android:id="@+id/mod_name"
+            android:textColor="@color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Mod Name"
@@ -37,12 +40,15 @@
             android:layout_height="wrap_content"
             android:text="Load order: 1"
             android:textSize="12sp"
-            android:textColor="#666666"
+            android:textColor="@color/white"
             android:visibility="gone"/>
     </LinearLayout>
 
     <Switch
         android:id="@+id/mod_switch"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:thumb="@drawable/switch_thumb_selector"
+        android:track="@drawable/switch_track"
+        />
 </LinearLayout>
