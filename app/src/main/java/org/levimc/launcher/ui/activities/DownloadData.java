@@ -28,6 +28,8 @@ public class DownloadData extends BaseActivity {
     private int pendingDownloads = 0;
     private boolean isPatchnotesDownloaded = false;
 
+    private boolean isThemeDownloaded = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -210,7 +210,36 @@
         <item>English - United States</item>
     </string-array>
     <array name="theme_spinner_array">
-        <item>Lastest Update</item>
+        <item>Copper Update</item>
+        <item>Wild Update</item>
+        <item>Caves Cliffs</item>
+        <item>Nether Update</item>
+        <item>Buzzy Bees</item>
+        <item>Village Pillage</item>
+        <item>Update Aquatic</item>
+        <item>Color Update</item>
+        <item>Discovery Update</item>
+        <item>Ender Update</item>
+        <item>Frosty Update</item>
+        <item>Combat Update</item>
+        <item>Boss Update</item>
+        <item>Friendly Update</item>
+        <item>Redstone Update</item>
+        <item>Halloween Update</item>
+        <item>Marketplace Update</item>
+        <item>Exploration Update</item>
+        <item>Ocean Update</item>
+        <item>Sky Update</item>
+        <item>Desert Update</item>
+        <item>Mountain Update</item>
+        <item>Jungle Update</item>
+        <item>Savanna Update</item>
+        <item>Taiga Update</item>
+        <item>Mushroom Update</item>
+        <item>Dragon Update</item>
+        <item>Cherry Blossom</item>
+        <item>Ancient City</item>
+        <item>Deep Dark</item>
     </array>
 
     <array name="pack_type_spinenr">

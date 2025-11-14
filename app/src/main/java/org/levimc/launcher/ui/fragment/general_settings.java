@@ -3,39 +3,36 @@ package org.levimc.launcher.ui.fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+
 import org.levimc.launcher.R;
 import org.levimc.launcher.settings.FeatureSettings;
 import org.levimc.launcher.ui.activities.MainActivity;
 import org.levimc.launcher.ui.dialogs.SettingsDialog;
 import org.levimc.launcher.util.GithubReleaseUpdater;
+import org.levimc.launcher.util.ThemeBackgroundManager;
 import org.levimc.launcher.util.ThemeManager;
 
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link general_settings#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class general_settings extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private TextView reviewlauncher;
+    private Spinner themeSpinner;
+    private ThemeBackgroundManager themeBackgroundManager;
     public general_settings() {
         // Required empty public constructor
     }
@@ -72,31 +69,57 @@ public class general_settings extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_general_settings, container, false);
+
+        // Initialize ThemeBackgroundManager
+        themeBackgroundManager = new ThemeBackgroundManager(requireContext());
+
         reviewlauncher = view.findViewById(R.id.reviewlauncher);
         Spinner languageSpinner = view.findViewById(R.id.language_spinner);
-        Spinner themeSpinner = view.findViewById(R.id.theme_spinner);
+        themeSpinner = view.findViewById(R.id.theme_spinner);
+
+        // Setup language spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 requireContext(),
-                R.array.language_spinner_array,  // phải trùng tên với strings.xml
+                R.array.language_spinner_array,
                 R.layout.spinner_item
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languageSpinner.setAdapter(adapter);
-        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(
+
+        // Setup theme spinner
+        ArrayAdapter<CharSequence> themeAdapter = ArrayAdapter.createFromResource(
                 requireContext(),
-                R.array.theme_spinner_array,  // phải trùng tên với strings.xml
+                R.array.theme_spinner_array,
                 R.layout.spinner_item
         );
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        themeSpinner.setAdapter(adapter2);
+        themeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        themeSpinner.setAdapter(themeAdapter);
+
+        // Set current selected theme
+        int savedThemeIndex = themeBackgroundManager.getSelectedThemeIndex();
+        themeSpinner.setSelection(savedThemeIndex);
+
+        // Setup theme selection listener
+        themeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Save selected theme
+                themeBackgroundManager.saveSelectedTheme(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
         reviewlauncher.setOnClickListener(v -> {
-            // khi nhấn nút này thì mở debug log như mainActivity
             showSettingsSafely();
         });
 
-        // Inflate the layout for this fragment
         return view;
     }
+
     private void showSettingsSafely() {
         try {
             showSettingsDialog();

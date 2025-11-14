@@ -25,6 +25,7 @@ import org.levimc.launcher.ui.views.MainViewModelFactory;
 import org.levimc.launcher.util.ApkImportManager;
 import org.levimc.launcher.util.LanguageManager;
 import org.levimc.launcher.util.PermissionsHandler;
+import org.levimc.launcher.util.ThemeBackgroundManager;
 import org.levimc.launcher.util.UIHelper;
 
 import android.text.TextUtils;
@@ -43,6 +44,7 @@ public class Play extends Fragment {
     private MainViewModel viewModel;
     private PlayListener listener;
     private VersionManager versionManager;
+    private ThemeBackgroundManager themeBackgroundManager;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private String mParam1;
@@ -91,6 +93,17 @@ public class Play extends Fragment {
         setupManagersAndHandlers();
         setTextMinecraftVersion();
         updateViewModelVersion();
+
+        // Apply selected theme background
+        applySelectedTheme();
+    }
+
+    private void applySelectedTheme() {
+        themeBackgroundManager = new ThemeBackgroundManager(requireContext());
+        int themeDrawableId = themeBackgroundManager.getSelectedThemeDrawableId();
+        if (binding != null && binding.launcherlayoutImageView1 != null) {
+            binding.launcherlayoutImageView1.setImageResource(themeDrawableId);
+        }
     }
 
     @Override
